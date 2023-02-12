@@ -1,6 +1,3 @@
 module.exports = {
-    '*.{ts,tsx,js,jsx}': [
-        'eslint --cache --fix',
-        'prettier --loglevel warn --write'
-    ]
+    '*.{ts,tsx,js,jsx}': ['eslint --cache', 'prettier --loglevel warn --write']
 };

@@ -15,8 +15,12 @@
         {
             "name": "Ernesto Stifano",
             "email": "ernesto.stifano@codistica.com",
-            "url": "https://github.com/ernestostifano"
+            "url": "https://github.com/ernestostifano",
+            "gpg": true
         }
+    ],
+    "domains": [
+        "codistica.com"
     ],
     "homepage": "https://www.codistica.com",
     "repository": {
@@ -56,17 +60,24 @@
         "build": "yarn run build:cjs && yarn run build:esm && yarn run build:types",
         "build:cjs": "cross-env NODE_ENV=production cross-env NPM_CONFIG_ESM=false babel ./src --out-dir ./cjs --copy-files --no-copy-ignored --source-maps --extensions \".ts,.tsx,.js,.jsx\"",
         "build:esm": "cross-env NODE_ENV=production cross-env NPM_CONFIG_ESM=true babel ./src --out-dir ./esm --copy-files --no-copy-ignored --source-maps --extensions \".ts,.tsx,.js,.jsx\"",
-        "build:types": "tsc --project tsconfig.json",
+        "build:types": "tsc --project ./tsconfig.json",
         "lint": "yarn run lint:code && yarn run lint:types",
         "lint:code": "eslint \"**/*.{js,ts,tsx}\" --cache",
         "lint:code-fix": "eslint \"**/*.{js,ts,tsx}\" --cache --fix",
-        "lint:types": "tsc --project tsconfig.lint.json",
+        "lint:commit": "node ./scripts/lint-commit.js",
+        "lint:commits": "node ./scripts/lint-commits.js",
+        "lint:format": "prettier --loglevel warn --check \"**/*.{ts,tsx,js,json,md}\"",
+        "lint:types": "tsc --project ./tsconfig.lint.json",
         "test": "yarn run test:unit",
+        "test:ci": "yarn run test:unit-ci",
         "test:unit": "jest",
+        "test:unit-ci": "jest --ci --bail --watchAll=false",
         "format": "prettier --loglevel warn --write \"**/*.{ts,tsx,js,json,md}\"",
         "cleanup": "rimraf cjs esm types .test ./node_modules .eslintcache",
         "uninstall": "yarn run cleanup && ./.pnp.loader.mjs ./.pnp.cjs ./.yarn/cache",
-        "prepack": "yarn run cleanup && yarn run format && yarn run lint && yarn run build && yarn run test"
+        "prepack": "yarn run cleanup && yarn run format && yarn run lint && yarn run build && yarn run test:ci && pinst --disable",
+        "postinstall": "husky install",
+        "postpack": "pinst --enable"
     },
     "dependencies": {
         "@babel/runtime": "^7.20.13",
@@ -103,6 +114,7 @@
         "babel-plugin-polyfill-corejs3": "^0.6.0",
         "confusing-browser-globals": "^1.0.11",
         "cross-env": "^7.0.3",
+        "escape-string-regexp": "^4.0.0",
         "eslint": "^8.32.0",
         "eslint-config-prettier": "^8.6.0",
         "eslint-import-resolver-typescript": "^3.5.3",
@@ -112,11 +124,13 @@
         "eslint-plugin-react": "^7.32.1",
         "eslint-plugin-react-hooks": "^4.6.0",
         "espree": "^9.4.1",
+        "husky": "^8.0.0",
         "identity-obj-proxy": "^3.0.0",
         "jest": "^29.4.1",
         "jest-environment-jsdom": "^29.4.1",
         "jest-junit": "^15.0.0",
         "lint-staged": "^13.1.1",
+        "pinst": "^3.0.0",
         "prettier": "^2.8.3",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",

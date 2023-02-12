@@ -1,4 +1,5 @@
 const {join} = require('node:path');
+const escape = require('escape-string-regexp');
 
 const TARGETS = {
     BABEL_FILES: '^.+\\.[jt]sx?$',
@@ -43,9 +44,10 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: [
         '<rootDir>/src/**/*.{ts,tsx}',
-        '!<rootDir>/src/**/*.stories.{ts,tsx}'
+        '!<rootDir>/src/**/*.stories.{ts,tsx}',
+        '!<rootDir>/src/**/index.{ts,tsx}'
     ],
-    coveragePathIgnorePatterns: ['/.yarn/', '/node_modules/'],
+    coveragePathIgnorePatterns: ['/node_modules/', escape('/.yarn/')],
     coverageDirectory: `<rootDir>/${OUTPUT_DIRNAME}/coverage`,
     coverageReporters: ['json', 'text', 'lcov', 'clover'],
     coverageThreshold: {

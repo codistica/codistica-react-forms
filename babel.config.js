@@ -66,15 +66,6 @@ module.exports = function (api, options = {}) {
 
     const coreJSVersion = getVersion('core-js-pure', false);
 
-    console.log('\n');
-    console.log('BABEL CONFIG:');
-    console.log('- ENV: ', env);
-    console.log('- ESM: ', esm);
-    console.log('- License Notice: ', licenseNotice);
-    console.log('- Transform Runtime Version: ', transformRuntimeVersion);
-    console.log('- CoreJS Version: ', coreJSVersion);
-    console.log('\n');
-
     const signature = JSON.stringify({
         env,
         esm,
@@ -85,6 +76,15 @@ module.exports = function (api, options = {}) {
     });
 
     api.cache.using(() => signature);
+
+    console.log('\n');
+    console.log('BABEL CONFIG:');
+    console.log('- ENV: ', env);
+    console.log('- ESM: ', esm);
+    console.log('- License Notice: ', licenseNotice);
+    console.log('- Transform Runtime Version: ', transformRuntimeVersion);
+    console.log('- CoreJS Version: ', coreJSVersion);
+    console.log('\n');
 
     const presets = [
         [
