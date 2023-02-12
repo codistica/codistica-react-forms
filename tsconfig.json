@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "lib": ["ESNext", "DOM"],
+        "jsx": "preserve",
+        "declarationDir": "./types",
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "NodeNext",
+        "resolveJsonModule": true,
+        "allowUnreachableCode": false,
+        "allowJs": false,
+        "checkJs": false,
+        "noEmit": false,
+        "noEmitOnError": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "declarationMap": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "esModuleInterop": false,
+        "forceConsistentCasingInFileNames": true,
+        "useDefineForClassFields": true,
+        "removeComments": false,
+        "allowSyntheticDefaultImports": true
+    },
+    "files": ["./src/index.ts"],
+    "include": [
+        "./tsconfig.d.ts",
+        "./src/jest.setup.ts",
+        "**/*.test.tsx",
+        "**/*.test.ts",
+        "**/*.stories.tsx"
+    ]
+}
