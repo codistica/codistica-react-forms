@@ -53,6 +53,36 @@ module.exports = {
         // *** MISC ***
 
         {
+            // JEST SETUP
+            files: ['**/jest.setup.*'],
+            extends: ['./.eslint/.eslintrc.node-esm.js']
+        },
+        {
+            // JEST TESTS
+            files: ['**/*.test.*'],
+            extends: ['./.eslint/.eslintrc.jest.js']
+        },
+        {
+            // STORYBOOK SETUP
+            files: ['./.storybook/**/*'],
+            excludedFiles: ['./.storybook/main.js'],
+            extends: [
+                './.eslint/.eslintrc.dom.js',
+                './.eslint/.eslintrc.react.js'
+            ]
+        },
+        {
+            // STORYBOOK MAIN
+            files: ['./.storybook/main.js'],
+            parser: 'espree',
+            extends: ['./.eslint/.eslintrc.node-cjs.js']
+        },
+        {
+            // STORYBOOK STORIES
+            files: ['**/*.stories.*'],
+            extends: ['./.eslint/.eslintrc.storybook.js']
+        },
+        {
             // PRETTIER (THIS SHOULD BE ALWAYS LAST)
             files: ['**/*'],
             extends: ['prettier']

@@ -14,7 +14,7 @@ module.exports = {
     },
     rules: {
         'react/jsx-uses-vars': 'warn',
-        'react/jsx-uses-react': 'warn',
+        'react/jsx-uses-react': 'off',
         'react/forbid-foreign-prop-types': ['warn', {allowInPropTypes: true}],
         'react/jsx-no-comment-textnodes': 'warn',
         'react/jsx-no-duplicate-props': 'warn',

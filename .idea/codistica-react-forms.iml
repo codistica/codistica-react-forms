@@ -5,10 +5,6 @@
       <excludePattern pattern="esm" />
       <excludePattern pattern="cjs" />
       <excludePattern pattern="types" />
-      <excludePattern pattern=".pnp.cjs" />
-      <excludePattern pattern=".pnp.loader.mjs" />
-      <excludePattern pattern="yarn.lock" />
-      <excludePattern pattern=".yarn" />
       <excludePattern pattern=".test" />
       <excludePattern pattern=".eslintcache" />
     </content>

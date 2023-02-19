@@ -44,6 +44,7 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: [
         '<rootDir>/src/**/*.{ts,tsx}',
+        '!<rootDir>/src/stories/**/*.{ts,tsx}',
         '!<rootDir>/src/**/*.stories.{ts,tsx}',
         '!<rootDir>/src/**/index.{ts,tsx}'
     ],

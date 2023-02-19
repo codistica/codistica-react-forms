@@ -9,6 +9,7 @@ module.exports = {
             'error',
             {ignoreRestSiblings: true}
         ],
+        '@typescript-eslint/consistent-type-definitions': ['warn', 'interface'],
         '@typescript-eslint/consistent-type-imports': [
             'warn',
             {
@@ -20,6 +21,19 @@ module.exports = {
         '@typescript-eslint/consistent-type-exports': [
             'warn',
             {fixMixedExportsWithInlineTypeSpecifier: false}
+        ],
+        '@typescript-eslint/naming-convention': [
+            'error',
+            {
+                selector: 'typeParameter',
+                format: ['PascalCase'],
+                prefix: ['T']
+            },
+            {
+                selector: 'interface',
+                format: ['PascalCase'],
+                prefix: ['I']
+            }
         ]
     }
 };

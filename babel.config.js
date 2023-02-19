@@ -58,7 +58,7 @@ module.exports = function (api, options = {}) {
         process.env.NPM_CONFIG_SKIP_LICENSE_NOTICE !== 'true';
 
     const targets = {
-        browsers: browserslist,
+        browsers: browserslist[env] || browserslist.development,
         node: toExactVersion(engines.node)
     };
 
@@ -97,7 +97,11 @@ module.exports = function (api, options = {}) {
         ]
     ];
 
-    const plugins = ['@babel/plugin-proposal-class-properties'];
+    const plugins = [
+        '@babel/plugin-proposal-class-properties',
+        '@babel/plugin-proposal-private-methods',
+        '@babel/plugin-proposal-private-property-in-object'
+    ];
 
     if (env === 'production') {
         plugins.push([

@@ -53,14 +53,22 @@
     "engines": {
         "node": ">=17.0.0"
     },
-    "browserslist": [
-        "last 3 years"
-    ],
+    "browserslist": {
+        "production": [
+            "last 3 years"
+        ],
+        "development": [
+            "last 1 version"
+        ]
+    },
     "scripts": {
         "build": "yarn run build:cjs && yarn run build:esm && yarn run build:types",
         "build:cjs": "cross-env NODE_ENV=production cross-env NPM_CONFIG_ESM=false babel ./src --out-dir ./cjs --copy-files --no-copy-ignored --source-maps --extensions \".ts,.tsx,.js,.jsx\"",
         "build:esm": "cross-env NODE_ENV=production cross-env NPM_CONFIG_ESM=true babel ./src --out-dir ./esm --copy-files --no-copy-ignored --source-maps --extensions \".ts,.tsx,.js,.jsx\"",
         "build:types": "tsc --project ./tsconfig.json",
+        "build:storybook": "build-storybook",
+        "cleanup": "rimraf cjs esm types .test ./node_modules .eslintcache",
+        "format": "prettier --loglevel warn --write \"**/*.{ts,tsx,js,json,md}\"",
         "lint": "yarn run lint:code && yarn run lint:types",
         "lint:code": "eslint \"**/*.{js,ts,tsx}\" --cache",
         "lint:code-fix": "eslint \"**/*.{js,ts,tsx}\" --cache --fix",
@@ -68,16 +76,15 @@
         "lint:commits": "node ./scripts/lint-commits.js",
         "lint:format": "prettier --loglevel warn --check \"**/*.{ts,tsx,js,json,md}\"",
         "lint:types": "tsc --project ./tsconfig.lint.json",
+        "postinstall": "husky install",
+        "postpack": "pinst --enable",
+        "prepack": "yarn run cleanup && yarn run format && yarn run lint && yarn run build && yarn run test:ci && pinst --disable",
+        "start": "start-storybook -p 6006",
         "test": "yarn run test:unit",
         "test:ci": "yarn run test:unit-ci",
         "test:unit": "jest",
         "test:unit-ci": "jest --ci --bail --watchAll=false",
-        "format": "prettier --loglevel warn --write \"**/*.{ts,tsx,js,json,md}\"",
-        "cleanup": "rimraf cjs esm types .test ./node_modules .eslintcache",
-        "uninstall": "yarn run cleanup && ./.pnp.loader.mjs ./.pnp.cjs ./.yarn/cache",
-        "prepack": "yarn run cleanup && yarn run format && yarn run lint && yarn run build && yarn run test:ci && pinst --disable",
-        "postinstall": "husky install",
-        "postpack": "pinst --enable"
+        "uninstall": "yarn run cleanup && rimraf ./.pnp.loader.mjs ./.pnp.cjs ./.yarn/cache"
     },
     "dependencies": {
         "@babel/runtime": "^7.20.13",
@@ -89,14 +96,27 @@
         "@babel/eslint-parser": "^7.19.1",
         "@babel/eslint-plugin": "^7.19.1",
         "@babel/plugin-proposal-class-properties": "^7.18.6",
+        "@babel/plugin-proposal-private-methods": "^7.18.6",
+        "@babel/plugin-proposal-private-property-in-object": "^7.20.5",
         "@babel/plugin-syntax-jsx": "^7.18.6",
         "@babel/plugin-transform-runtime": "^7.19.6",
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-react": "^7.18.6",
         "@babel/preset-typescript": "^7.18.6",
+        "@mdx-js/react": "^1.6.22",
+        "@storybook/addon-actions": "^6.5.16",
+        "@storybook/addon-docs": "^6.5.16",
+        "@storybook/addon-essentials": "^6.5.16",
+        "@storybook/addon-interactions": "^6.5.16",
+        "@storybook/addon-links": "^6.5.16",
+        "@storybook/builder-webpack5": "^6.5.16",
+        "@storybook/manager-webpack5": "^6.5.16",
+        "@storybook/react": "^6.5.16",
+        "@storybook/testing-library": "^0.0.13",
         "@testing-library/dom": "^8.20.0",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^14.4.3",
         "@types/babel__core": "^7",
         "@types/babel__plugin-transform-runtime": "^7",
         "@types/babel__preset-env": "^7",
@@ -110,6 +130,7 @@
         "@typescript-eslint/eslint-plugin": "^5.49.0",
         "@typescript-eslint/parser": "^5.49.0",
         "babel-jest": "^29.4.1",
+        "babel-loader": "^8.3.0",
         "babel-plugin-jsx-remove-data-test-id": "^3.0.0",
         "babel-plugin-polyfill-corejs3": "^0.6.0",
         "confusing-browser-globals": "^1.0.11",
@@ -135,7 +156,8 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "rimraf": "^4.1.2",
-        "typescript": "^4.9.4"
+        "typescript": "^4.9.4",
+        "webpack": "^5.75.0"
     },
     "peerDependencies": {
         "react": "^18.2.0",
