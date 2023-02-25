@@ -16,7 +16,8 @@
             "name": "Ernesto Stifano",
             "email": "ernesto.stifano@codistica.com",
             "url": "https://github.com/ernestostifano",
-            "gpg": true
+            "gpg": true,
+            "gpgKeyID": "1EA8A4331C50202C"
         }
     ],
     "domains": [
@@ -49,7 +50,7 @@
         "!*.test.*",
         "!**/jest.setup.*"
     ],
-    "packageManager": "yarn@3.3.1",
+    "packageManager": "yarn@3.4.1",
     "engines": {
         "node": ">=17.0.0"
     },
@@ -74,6 +75,7 @@
         "lint:code-fix": "eslint \"**/*.{js,ts,tsx}\" --cache --fix",
         "lint:commit": "node ./scripts/lint-commit.js",
         "lint:commits": "node ./scripts/lint-commits.js",
+        "lint:no-diff": "node ./scripts/lint-no-diff.js",
         "lint:format": "prettier --loglevel warn --check \"**/*.{ts,tsx,js,json,md}\"",
         "lint:types": "tsc --project ./tsconfig.lint.json",
         "postinstall": "husky install",

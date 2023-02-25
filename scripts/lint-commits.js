@@ -1,5 +1,6 @@
 const {getCommits} = require('../utils/get-commits.js');
 const {getCurrentBranch} = require('../utils/get-current-branch.js');
+const {isCommitMerged} = require('../utils/is-commit-merged.js');
 const {verifyCommitMessage} = require('../utils/verify-commit-message.js');
 const {verifyContributor} = require('../utils/verify-contributor.js');
 
@@ -34,18 +35,30 @@ const {verifyContributor} = require('../utils/verify-contributor.js');
             authorName,
             authorEmail,
             committerName,
-            committerEmail
+            committerEmail,
+            gpgKeyID
         } = commit;
 
-        verifyCommitMessage(hash, message, body);
+        const isMerged = await isCommitMerged(hash);
 
-        await verifyContributor('Author', hash, authorName, authorEmail);
+        verifyCommitMessage(hash, message, body, isMerged);
+
+        await verifyContributor(
+            'Author',
+            hash,
+            authorName,
+            authorEmail,
+            gpgKeyID,
+            isMerged
+        );
 
         await verifyContributor(
             'Committer',
             hash,
             committerName,
-            committerEmail
+            committerEmail,
+            gpgKeyID,
+            isMerged
         );
     }
 

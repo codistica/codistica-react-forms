@@ -1,11 +1,14 @@
 const {MESSAGE_MAX_LENGTH} = require('../defines/commits.js');
-const {COMMIT_TASKS} = require('../defines/commits.js');
+const {
+    COMMIT_TASKS,
+    DEPRECATED_COMMIT_TASKS
+} = require('../defines/commits.js');
 const {COMMIT_MESSAGE} = require('../defines/reg-exps.js');
 
-function verifyCommitMessage(hash, message, body) {
+function verifyCommitMessage(hash, message, body, isMerged) {
     if (!COMMIT_MESSAGE.test(message)) {
         throw new Error(
-            `Message "${message}" for commit ${hash} does not match the required pattern.`
+            `Message (${message}) for commit ${hash} does not match the required pattern.`
         );
     }
 
@@ -17,7 +20,11 @@ function verifyCommitMessage(hash, message, body) {
         );
     }
 
-    if (!COMMIT_TASKS.some((t) => match.groups.task === t)) {
+    const tasks = isMerged
+        ? COMMIT_TASKS.concat(DEPRECATED_COMMIT_TASKS)
+        : COMMIT_TASKS;
+
+    if (!tasks.some((t) => match.groups.task === t)) {
         throw new Error(
             `Message "${message}" for commit ${hash} does not match the required pattern. Type ${match.groups.task} is not allowed.`
         );

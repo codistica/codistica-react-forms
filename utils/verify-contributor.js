@@ -1,13 +1,12 @@
 const {EMAIL, FULL_NAME} = require('../defines/reg-exps.js');
 const {getContributors} = require('./get-contributors.js');
 const {getDomains} = require('./get-domains.js');
-const {verifyCommitSignature} = require('./verify-commit-signature.js');
 
 const contributors = getContributors();
 const domains = getDomains();
 
-async function verifyContributor(type, hash, name, email) {
-    const pretty = name + ' <' + email + '>';
+async function verifyContributor(type, hash, name, email, gpgKeyID, isMerged) {
+    const contributor = name + ' <' + email + '>';
 
     if (!FULL_NAME.test(name)) {
         throw new Error(
@@ -39,16 +38,18 @@ async function verifyContributor(type, hash, name, email) {
 
     if (!match || match.name !== name) {
         throw new Error(
-            `${type} (${pretty}) of commit ${hash} is not in the list of allowed contributors.`
+            `${type} (${contributor}) of commit ${hash} is not in the list of allowed contributors.`
         );
     }
 
-    if (type === 'Committer' && 'gpg' in match && match.gpg) {
-        const isSigned = await verifyCommitSignature(hash);
+    if (match.gpg && hash !== 'NEW-COMMIT' && !isMerged) {
+        if (!match.gpgKeyID) {
+            throw new Error(`Pleas add GPG Key ID for (${contributor}).`);
+        }
 
-        if (!isSigned) {
+        if (match.gpgKeyID !== gpgKeyID) {
             throw new Error(
-                `GPG signature is required for committer (${pretty}) on commit ${hash}.`
+                `GPG signature is required for (${contributor}) on commit ${hash}.`
             );
         }
     }

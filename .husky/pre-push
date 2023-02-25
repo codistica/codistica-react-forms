@@ -2,28 +2,10 @@
 command -v git-lfs >/dev/null 2>&1 || { echo >&2 "\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting '.git/hooks/pre-push'.\n"; exit 2; }
 git lfs pre-push "$@"
 
-yarn run lint:code
-
-if [ $? -ne 0 ]; then
-  exit 1
-fi
-
-yarn run lint:format
-
-if [ $? -ne 0 ]; then
-  exit 1
-fi
-
-yarn run lint:commits
-
-if [ $? -ne 0 ]; then
-  exit 1
-fi
-
-yarn run build
-
-if [ $? -ne 0 ]; then
-  exit 1
-fi
-
-yarn run test:ci
+yarn || exit 1
+yarn run build || exit 1
+yarn run lint:format || exit 1
+yarn run lint:code || exit 1
+yarn run lint:commits || exit 1
+yarn run test:unit-ci || exit 1
+yarn run lint:no-diff

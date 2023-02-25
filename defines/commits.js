@@ -12,7 +12,10 @@ const COMMIT_TASKS = [
     'test'
 ];
 
+const DEPRECATED_COMMIT_TASKS = [];
+
 module.exports = {
     MESSAGE_MAX_LENGTH,
-    COMMIT_TASKS
+    COMMIT_TASKS,
+    DEPRECATED_COMMIT_TASKS
 };
