@@ -1,0 +1,39 @@
+name: Lint Format
+
+on:
+    pull_request:
+        types: [opened, reopened, edited, synchronize]
+
+jobs:
+    lint-format:
+        name: Lint Format
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: List LFS Objects
+              shell: bash
+              run: git lfs ls-files -l | cut -d ' ' -f1 | sort > .lfs-assets-id
+
+            - name: Restore LFS Cache
+              uses: actions/cache@v2
+              id: lfs-cache
+              with:
+                  path: .git/lfs
+                  key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
+
+            - name: Git LFS Pull
+              shell: bash
+              run: git lfs pull
+
+            - name: Initialize Yarn
+              shell: bash
+              run: yarn
+
+            - name: Lint Format
+              shell: bash
+              run: yarn run lint:format

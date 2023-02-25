@@ -1,0 +1,20 @@
+name: Add Labels PR
+
+on:
+    pull_request:
+        types: [opened, reopened]
+
+jobs:
+    add-labels-pr:
+        name: Add Labels PR
+        runs-on: ubuntu-latest
+        permissions:
+            pull-requests: write
+            repository-projects: read
+
+        steps:
+            - name: Add Labels PR
+              shell: bash
+              run: gh pr edit ${{ github.event.pull_request.number }} --add-label "pending-review" --repo ${{ github.repository }}
+              env:
+                  GH_TOKEN: ${{ github.token }}

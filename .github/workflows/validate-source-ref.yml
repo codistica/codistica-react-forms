@@ -1,0 +1,21 @@
+name: Validate Source Ref
+
+on:
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    validate-source-ref:
+        name: Validate Source Ref
+        runs-on: ubuntu-latest
+        permissions: {}
+
+        steps:
+            - name: Validate Source Ref
+              shell: bash
+              if: github.event.pull_request.head.ref != 'development'
+              run: |
+                  echo "Pull requests targeting branch 'main' are allowed only from 'development' branch."
+                  echo "Current head: ${{ github.event.pull_request.head.ref }}"
+                  exit 1
