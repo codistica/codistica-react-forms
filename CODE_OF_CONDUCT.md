@@ -73,9 +73,7 @@ available [here][contributor-covenant-code].
 
 For answers to common questions about this code of conduct, see [Contributor Covenant FAQ][contributor-covenant-faq].
 
-<!--EXTERNAL LINKS-->
-
 [contributor-covenant]: https://www.contributor-covenant.org
-[contributor-covenant-code]: https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
+[contributor-covenant-code]: https://www.contributor-covenant.org/version/1/4/code-of-conduct
 [contributor-covenant-faq]: https://www.contributor-covenant.org/faq
 [codistica-people]: https://github.com/orgs/codistica/people

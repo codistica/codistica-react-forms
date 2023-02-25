@@ -1,15 +1,14 @@
 const MESSAGE_MAX_LENGTH = 72;
 
 const COMMIT_TASKS = [
-    'chore',
-    'ci',
-    'docs',
     'feat',
+    'chore',
+    'docs',
     'fix',
-    'perf',
+    'tests',
     'refactor',
-    'style',
-    'test'
+    'perf',
+    'ci'
 ];
 
 const DEPRECATED_COMMIT_TASKS = [];

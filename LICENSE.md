@@ -1,6 +1,6 @@
 ## MIT License
 
-## Copyright (c) 2020, _Codistica and its affiliates._
+## Copyright (c) 2023, _Codistica and its affiliates._
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
