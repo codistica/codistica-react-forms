@@ -12,11 +12,21 @@ This change log adheres to standards from [Keep a CHANGELOG][keep-a-changelog].
 
 ### Added
 
--   N/A.
+-   Setup basic GitHub actions.
+-   Added PR template.
+-   Implemented `lint-no-diff` script.
+-   Implemented `storybook`.
+-   Implemented `lint-commits` script.
+-   Implemented `lint-commit` script.
+-   Implemented `lint-staged`.
+-   Implemented `husky`.
+-   ***Initial commit.***
 
 ### Changed
 
--   N/A.
+-   Updated `husky`.
+-   Improved markdown.
+-   Improved project setup.
 
 ### Removed
 
@@ -27,6 +37,5 @@ This change log adheres to standards from [Keep a CHANGELOG][keep-a-changelog].
 -   N/A.
 
 [unreleased]: https://github.com/codistica/codistica-react-forms/compare/main...HEAD
-
 [semver]: https://semver.org
 [keep-a-changelog]: https://keepachangelog.com
