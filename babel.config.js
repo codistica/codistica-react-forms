@@ -98,6 +98,13 @@ module.exports = function (api, options = {}) {
     ];
 
     const plugins = [
+        [
+            // TODO: REMOVE AFTER REMOVING REACT CLASS COMPONENTS
+            '@babel/plugin-transform-typescript',
+            {
+                allowDeclareFields: true
+            }
+        ],
         '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-private-methods',
         '@babel/plugin-proposal-private-property-in-object'
@@ -164,7 +171,15 @@ module.exports = function (api, options = {}) {
             {
                 // THIS PRESET WILL JUST STRIP/TRANSFORM TYPESCRIPT SYNTAX WITHOUT PERFORMING ANY CHECK (AS EXPECTED). TYPECHECKING SHOULD BE PERFORMED WHEN BUILDING TYPE DECLARATIONS
                 test: ['**/*.ts', '**/*.tsx'],
-                presets: ['@babel/preset-typescript']
+                presets: [
+                    [
+                        '@babel/preset-typescript',
+                        {
+                            // TODO: REMOVE AFTER REMOVING REACT CLASS COMPONENTS
+                            allowDeclareFields: true
+                        }
+                    ]
+                ]
             },
             {
                 // https://babeljs.io/docs/en/options#sourcetype

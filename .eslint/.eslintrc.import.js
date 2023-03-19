@@ -1,5 +1,5 @@
 module.exports = {
-    plugins: ['import'],
+    plugins: ['import', 'sort-exports'],
     extends: ['plugin:import/warnings'],
     rules: {
         'import/named': 'error',
@@ -29,6 +29,12 @@ module.exports = {
         ],
         'import/no-default-export': 'warn',
         'import/group-exports': 'warn',
+        'sort-imports': [
+            'warn',
+            {
+                ignoreDeclarationSort: true
+            }
+        ],
         'import/order': [
             'warn',
             {
@@ -41,8 +47,16 @@ module.exports = {
                     'index'
                 ],
                 alphabetize: {
-                    order: 'asc'
+                    order: 'asc',
+                    orderImportKind: 'asc'
                 }
+            }
+        ],
+        'sort-exports/sort-exports': [
+            'warn',
+            {
+                sortDir: 'asc',
+                sortExportKindFirst: 'type'
             }
         ],
         'import/newline-after-import': 'warn',
@@ -52,6 +66,8 @@ module.exports = {
         'import/first': 'error',
         'import/no-amd': 'error',
         'import/no-anonymous-default-export': 'warn',
-        'import/no-webpack-loader-syntax': 'error'
+        'import/no-webpack-loader-syntax': 'error',
+        'import/no-empty-named-blocks': 'error',
+        'import/consistent-type-specifier-style': ['error', 'prefer-top-level']
     }
 };

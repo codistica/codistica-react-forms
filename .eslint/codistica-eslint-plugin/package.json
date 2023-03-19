@@ -1,0 +1,7 @@
+{
+    "name": "@codistica/eslint-plugin",
+    "private": true,
+    "version": "1.0.0",
+    "license": "ISC",
+    "main": "./index.js"
+}

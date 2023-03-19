@@ -54,5 +54,5 @@ const Button: FC<IButtonProps> = ({
     );
 };
 
-export {Button};
 export type {IButtonProps};
+export {Button};

@@ -74,5 +74,5 @@ const Header: FC<IHeaderProps> = ({
     </header>
 );
 
-export {Header};
 export type {IHeaderProps};
+export {Header};

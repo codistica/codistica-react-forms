@@ -1,5 +1,5 @@
-import type {ComponentStory, ComponentMeta} from '@storybook/react';
-import {within, userEvent} from '@storybook/testing-library';
+import type {ComponentMeta, ComponentStory} from '@storybook/react';
+import {userEvent, within} from '@storybook/testing-library';
 import {Page} from './page';
 
 const Template: ComponentStory<typeof Page> = (args) => <Page {...args} />;
@@ -15,7 +15,7 @@ LoggedIn.play = ({canvasElement}) => {
     userEvent.click(loginButton);
 };
 
-export {LoggedOut, LoggedIn};
+export {LoggedIn, LoggedOut};
 
 export default {
     title: 'Example/Page',

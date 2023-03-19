@@ -9,6 +9,8 @@ module.exports = {
             'error',
             {ignoreRestSiblings: true}
         ],
+        'no-use-before-define': 'off',
+        '@typescript-eslint/no-use-before-define': 'error',
         '@typescript-eslint/consistent-type-definitions': ['warn', 'interface'],
         '@typescript-eslint/consistent-type-imports': [
             'warn',
@@ -25,7 +27,7 @@ module.exports = {
         '@typescript-eslint/naming-convention': [
             'error',
             {
-                selector: 'typeParameter',
+                selector: ['typeAlias', 'typeParameter'],
                 format: ['PascalCase'],
                 prefix: ['T']
             },

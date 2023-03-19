@@ -1,4 +1,4 @@
-import type {ComponentStory, ComponentMeta} from '@storybook/react';
+import type {ComponentMeta, ComponentStory} from '@storybook/react';
 
 import {Button} from './button';
 
@@ -29,7 +29,7 @@ Small.args = {
     label: 'Button'
 };
 
-export {Primary, Secondary, Large, Small};
+export {Large, Primary, Secondary, Small};
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

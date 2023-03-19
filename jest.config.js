@@ -46,7 +46,8 @@ module.exports = {
         '<rootDir>/src/**/*.{ts,tsx}',
         '!<rootDir>/src/stories/**/*.{ts,tsx}',
         '!<rootDir>/src/**/*.stories.{ts,tsx}',
-        '!<rootDir>/src/**/index.{ts,tsx}'
+        '!<rootDir>/src/**/index.{ts,tsx}',
+        '!<rootDir>/src/**/*.types.{ts,tsx}'
     ],
     coveragePathIgnorePatterns: ['/node_modules/', escape('/.yarn/')],
     coverageDirectory: `<rootDir>/${OUTPUT_DIRNAME}/coverage`,

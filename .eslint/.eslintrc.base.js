@@ -2,8 +2,10 @@ const restrictedGlobals = require('confusing-browser-globals');
 
 module.exports = {
     extends: ['eslint:recommended'],
+    plugins: ['@codistica'],
     noInlineConfig: true,
     rules: {
+        '@codistica/no-optional-chaining': 'warn',
         'no-var': 'warn',
         'padding-line-between-statements': [
             'off',
@@ -136,6 +138,10 @@ module.exports = {
                 message: 'Please use import() instead.'
             }
         ],
-        'getter-return': 'warn'
+        'getter-return': 'warn',
+        'no-console': ['error', {allow: ['warn', 'error']}],
+        'no-unneeded-ternary': 'warn',
+        'no-nested-ternary': 'warn',
+        'no-warning-comments': 'warn'
     }
 };
