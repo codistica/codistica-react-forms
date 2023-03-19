@@ -1,5 +1,5 @@
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
-import type {IValidator, TRawMessage} from '../../../defines/common.types';
+import type {IValidator, TMessage} from '../../../defines/common.types';
 import {REG_EXPS} from '../../../defines/reg-exps';
 
 interface IPasswordValidatorOptions {
@@ -10,12 +10,12 @@ interface IPasswordValidatorOptions {
     uppercases?: number;
     specials?: number;
     errorMessages?: {
-        generic?: TRawMessage;
-        length?: TRawMessage;
-        numbers?: TRawMessage;
-        lowercases?: TRawMessage;
-        uppercases?: TRawMessage;
-        specials?: TRawMessage;
+        generic?: TMessage;
+        length?: TMessage;
+        numbers?: TMessage;
+        lowercases?: TMessage;
+        uppercases?: TMessage;
+        specials?: TMessage;
     };
 }
 

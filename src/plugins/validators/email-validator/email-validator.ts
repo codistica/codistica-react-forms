@@ -1,15 +1,15 @@
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
-import type {IValidator, TRawMessage} from '../../../defines/common.types';
+import type {IValidator, TMessage} from '../../../defines/common.types';
 import {REG_EXPS} from '../../../defines/reg-exps';
 
 interface IEmailValidatorOptions {
     username?: RegExp | null;
     domains?: Array<string | RegExp> | null;
     errorMessages?: {
-        generic?: TRawMessage;
-        format?: TRawMessage;
-        username?: TRawMessage;
-        domains?: TRawMessage;
+        generic?: TMessage;
+        format?: TMessage;
+        username?: TMessage;
+        domains?: TMessage;
     };
 }
 

@@ -1,4 +1,4 @@
-import type {IPreset, TRawMessage} from '../../../defines/common.types';
+import type {IPreset, TMessage} from '../../../defines/common.types';
 import {spaceBlocker} from '../../blockers';
 import {spaceFilter, uppercaseFilter} from '../../filters';
 import {emailValidator} from '../../validators';
@@ -7,10 +7,10 @@ interface IEmailPresetOptions {
     username?: RegExp | null;
     domains?: Array<string> | null;
     errorMessages?: {
-        generic?: TRawMessage;
-        format?: TRawMessage;
-        username?: TRawMessage;
-        domains?: TRawMessage;
+        generic?: TMessage;
+        format?: TMessage;
+        username?: TMessage;
+        domains?: TMessage;
     };
 }
 

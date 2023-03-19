@@ -1,8 +1,5 @@
-import type {
-    IValidator,
-    IValidatorOutput
-} from '../../../../defines/common.types';
-import {ValidationUtils} from '../../../validation-utils/validation-utils';
+import type {IValidator, IValidatorOutput} from '../../defines/common.types';
+import {createResolvedMessage} from '../create-resolved-message/create-resolved-message';
 
 function runValidator(
     stringValue: string,
@@ -39,14 +36,13 @@ function runValidator(
                     continue;
                 }
                 if (validator.errorMessages[i]) {
-                    validatorOutput.messages[i] =
-                        ValidationUtils.createMessageObject(
-                            validator.errorMessages[i],
-                            undefined,
-                            {
-                                sortKey: -1
-                            }
-                        );
+                    validatorOutput.messages[i] = createResolvedMessage(
+                        validator.errorMessages[i],
+                        undefined,
+                        {
+                            sortIndex: -1
+                        }
+                    );
                 }
             }
         }
@@ -60,14 +56,13 @@ function runValidator(
                     continue;
                 }
                 if (validator.groupErrorMessages[i]) {
-                    validatorOutput.messages[i] =
-                        ValidationUtils.createMessageObject(
-                            validator.groupErrorMessages[i],
-                            undefined,
-                            {
-                                sortKey: -1
-                            }
-                        );
+                    validatorOutput.messages[i] = createResolvedMessage(
+                        validator.groupErrorMessages[i],
+                        undefined,
+                        {
+                            sortIndex: -1
+                        }
+                    );
                 }
             }
         }

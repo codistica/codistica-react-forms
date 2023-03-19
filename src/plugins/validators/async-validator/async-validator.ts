@@ -1,19 +1,19 @@
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
-import type {IValidator, TRawMessage} from '../../../defines/common.types';
+import type {IValidator, TMessage} from '../../../defines/common.types';
 
 interface IAsyncValidatorOptions {
     executor?: (latestValue: string) => Promise<boolean | null>;
     enableDeferCache?: boolean;
     deferThrottlingDelay?: number | null;
     errorMessages?: {
-        generic?: TRawMessage;
-        executor?: TRawMessage;
+        generic?: TMessage;
+        executor?: TMessage;
     };
     successMessages?: {
-        executor?: TRawMessage;
+        executor?: TMessage;
     };
     standByMessages?: {
-        executor?: TRawMessage;
+        executor?: TMessage;
     };
 }
 

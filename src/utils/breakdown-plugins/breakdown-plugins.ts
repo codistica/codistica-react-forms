@@ -2,12 +2,12 @@ import type {
     IBlocker,
     IFilter,
     IValidator,
-    TInputPlugin
-} from '../../../../defines/common.types';
-import {flat, norm} from '../../../../utils/array-utils';
+    TPlugin
+} from '../../defines/common.types';
+import {flat, norm} from '../array-utils';
 import {initializePlugin} from '../initialize-plugin/initialize-plugin';
 
-function breakdownPlugins(plugins: TInputPlugin): {
+function breakdownPlugins(plugins: TPlugin): {
     blockers: Array<IBlocker>;
     filters: Array<IFilter>;
     validators: Array<IValidator>;

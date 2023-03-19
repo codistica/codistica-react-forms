@@ -1,5 +1,5 @@
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
-import type {IValidator, TRawMessage} from '../../../defines/common.types';
+import type {IValidator, TMessage} from '../../../defines/common.types';
 import {toFullYear} from '../../../utils/date-utils';
 import {parseIntAll} from '../../../utils/number-utils';
 import {escape} from '../../../utils/reg-exp-utils';
@@ -11,12 +11,12 @@ interface IDateValidatorOptions {
     format?: [number, number, number];
     separator?: string | null;
     errorMessages?: {
-        generic?: TRawMessage;
-        minDate?: TRawMessage;
-        maxDate?: TRawMessage;
-        minAge?: TRawMessage;
-        format?: TRawMessage;
-        separator?: TRawMessage;
+        generic?: TMessage;
+        minDate?: TMessage;
+        maxDate?: TMessage;
+        minAge?: TMessage;
+        format?: TMessage;
+        separator?: TMessage;
     };
 }
 

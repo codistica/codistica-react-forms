@@ -1,16 +1,16 @@
-import type {IPreset, TRawMessage} from '../../../defines/common.types';
+import type {IPreset, TMessage} from '../../../defines/common.types';
 import {spaceBlocker} from '../../blockers';
 import {spaceFilter} from '../../filters';
 import {passwordValidator} from '../../validators';
 
 interface IPasswordPresetOptions {
     errorMessages?: {
-        generic?: TRawMessage;
-        length?: TRawMessage;
-        numbers?: TRawMessage;
-        lowercases?: TRawMessage;
-        uppercases?: TRawMessage;
-        specials?: TRawMessage;
+        generic?: TMessage;
+        length?: TMessage;
+        numbers?: TMessage;
+        lowercases?: TMessage;
+        uppercases?: TMessage;
+        specials?: TMessage;
     };
 }
 

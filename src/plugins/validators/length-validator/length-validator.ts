@@ -1,13 +1,13 @@
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
-import type {IValidator, TRawMessage} from '../../../defines/common.types';
+import type {IValidator, TMessage} from '../../../defines/common.types';
 
 interface ILengthValidatorOptions {
     minLength?: number;
     maxLength?: number;
     errorMessages?: {
-        generic?: TRawMessage;
-        minLength?: TRawMessage;
-        maxLength?: TRawMessage;
+        generic?: TMessage;
+        minLength?: TMessage;
+        maxLength?: TMessage;
     };
 }
 

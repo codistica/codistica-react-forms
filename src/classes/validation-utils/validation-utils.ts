@@ -1,20 +1,20 @@
 import type {
     IDeferContext,
-    IMessageObject,
-    IMessages,
-    IOptions,
-    IReport,
+    IResolvedMessage,
+    IValidationReport,
+    IValidationUtilsOptions,
     IValidatorOutput,
     TDeferCache,
     TDeferCallback,
-    TRawMessage
+    TMessage
 } from '../../defines/common.types';
 import type {THeartbeat} from '../../utils/create-heartbeat/create-heartbeat';
 import {createHeartbeat} from '../../utils/create-heartbeat/create-heartbeat';
+import {createResolvedMessage} from '../../utils/create-resolved-message/create-resolved-message';
 import {promise} from '../../utils/promise/promise';
 
 class ValidationUtils {
-    options: Required<IOptions>;
+    options: Required<IValidationUtilsOptions>;
 
     value: string;
     previousValue: string | null;
@@ -25,7 +25,7 @@ class ValidationUtils {
     deferCaches: {[k: string]: TDeferCache};
     deferHeartbeats: {[k: string]: THeartbeat};
 
-    constructor(options: IOptions = {}) {
+    constructor(options: IValidationUtilsOptions = {}) {
         this.options = {
             keys: options.keys || [],
             enableDeferCache: options.enableDeferCache || false,
@@ -65,47 +65,41 @@ class ValidationUtils {
     init(
         value: string,
         initialValidationStatus: boolean | null,
-        rawMessages?: {[k: string]: TRawMessage},
+        rawMessages?: {[k: string]: TMessage},
         params?: {[k: string]: unknown}
     ) {
         this.value = value;
 
         this.validatorOutput.result = initialValidationStatus;
 
-        this.validatorOutput.report = this.options.keys.reduce<IReport>(
-            (acc, key) => {
+        this.validatorOutput.report =
+            this.options.keys.reduce<IValidationReport>((acc, key) => {
                 acc[key] = initialValidationStatus;
                 return acc;
-            },
-            {}
-        );
+            }, {});
 
         if (rawMessages) {
-            this.validatorOutput.messages = this.options.keys.reduce<IMessages>(
-                (acc, key) => {
-                    const rawMessage = rawMessages[key];
+            this.validatorOutput.messages = this.options.keys.reduce<{
+                [k: string]: IResolvedMessage;
+            }>((acc, key) => {
+                const rawMessage = rawMessages[key];
 
-                    if (rawMessage) {
-                        if (
-                            typeof params === 'object' &&
-                            params !== null &&
-                            Object.hasOwnProperty.call(params, key)
-                        ) {
-                            acc[key] = ValidationUtils.createMessageObject(
-                                rawMessage,
-                                params[key] as {[k: string]: unknown}
-                            );
-                        } else {
-                            acc[key] = ValidationUtils.createMessageObject(
-                                rawMessage,
-                                params
-                            );
-                        }
+                if (rawMessage) {
+                    if (
+                        typeof params === 'object' &&
+                        params !== null &&
+                        Object.hasOwnProperty.call(params, key)
+                    ) {
+                        acc[key] = createResolvedMessage(
+                            rawMessage,
+                            params[key] as {[k: string]: unknown}
+                        );
+                    } else {
+                        acc[key] = createResolvedMessage(rawMessage, params);
                     }
-                    return acc;
-                },
-                {}
-            );
+                }
+                return acc;
+            }, {});
         } else {
             this.validatorOutput.messages = {};
         }
@@ -116,7 +110,7 @@ class ValidationUtils {
     setKeyResult(
         key: string | undefined,
         result: boolean | null,
-        rawMessage?: TRawMessage | null,
+        rawMessage?: TMessage | null,
         params?: {[k: string]: unknown},
         noAbort?: boolean
     ) {
@@ -126,8 +120,10 @@ class ValidationUtils {
             }
             this.validatorOutput.report[key] = result;
             if (rawMessage) {
-                this.validatorOutput.messages[key] =
-                    ValidationUtils.createMessageObject(rawMessage, params);
+                this.validatorOutput.messages[key] = createResolvedMessage(
+                    rawMessage,
+                    params
+                );
             }
             this.updateResult();
         } else if (!this.options.keys.length) {
@@ -137,13 +133,13 @@ class ValidationUtils {
 
     invalidate(
         key?: string,
-        rawMessage?: TRawMessage,
+        rawMessage?: TMessage,
         params?: {[k: string]: unknown}
     ) {
         this.setKeyResult(key, false, rawMessage, params);
     }
 
-    invalidateAll(rawMessage?: TRawMessage, params?: {[k: string]: unknown}) {
+    invalidateAll(rawMessage?: TMessage, params?: {[k: string]: unknown}) {
         if (!this.options.keys.length) {
             this.validatorOutput.result = false;
         } else {
@@ -155,13 +151,13 @@ class ValidationUtils {
 
     validate(
         key?: string,
-        rawMessage?: TRawMessage,
+        rawMessage?: TMessage,
         params?: {[k: string]: unknown}
     ) {
         this.setKeyResult(key, true, rawMessage, params);
     }
 
-    validateAll(rawMessage?: TRawMessage, params?: {[k: string]: unknown}) {
+    validateAll(rawMessage?: TMessage, params?: {[k: string]: unknown}) {
         if (!this.options.keys.length) {
             this.validatorOutput.result = true;
         } else {
@@ -173,13 +169,13 @@ class ValidationUtils {
 
     disable(
         key?: string,
-        rawMessage?: TRawMessage,
+        rawMessage?: TMessage,
         params?: {[k: string]: unknown}
     ) {
         this.setKeyResult(key, null, rawMessage, params);
     }
 
-    disableAll(rawMessage?: TRawMessage, params?: {[k: string]: unknown}) {
+    disableAll(rawMessage?: TMessage, params?: {[k: string]: unknown}) {
         if (!this.options.keys.length) {
             this.validatorOutput.result = null;
         } else {
@@ -191,7 +187,7 @@ class ValidationUtils {
 
     defer(
         key: string,
-        rawMessage: TRawMessage | null,
+        rawMessage: TMessage | null,
         params: {[k: string]: unknown},
         callback: TDeferCallback,
         onAbort?: () => void
@@ -272,7 +268,7 @@ class ValidationUtils {
         let value = this.value;
         return {
             invalidate: (
-                rawMessage?: TRawMessage,
+                rawMessage?: TMessage,
                 params?: {[k: string]: unknown}
             ) => {
                 if (cache) {
@@ -290,7 +286,7 @@ class ValidationUtils {
                 }
             },
             validate: (
-                rawMessage?: TRawMessage,
+                rawMessage?: TMessage,
                 params?: {[k: string]: unknown}
             ) => {
                 if (cache) {
@@ -308,7 +304,7 @@ class ValidationUtils {
                 }
             },
             disable: (
-                rawMessage?: TRawMessage,
+                rawMessage?: TMessage,
                 params?: {[k: string]: unknown}
             ) => {
                 if (cache) {
@@ -389,57 +385,6 @@ class ValidationUtils {
     getOutput(): IValidatorOutput {
         this.previousValue = this.value;
         return this.validatorOutput;
-    }
-
-    static createMessageObject(
-        rawMessage: TRawMessage,
-        params?: {[k: string]: unknown},
-        options?: {sortKey?: number}
-    ): IMessageObject {
-        let messageSource = null;
-        let messageParams = {};
-        let messageOptions = {};
-        let outputMessage = null;
-        let outputParams = {};
-        let outputOptions = {};
-
-        if (typeof rawMessage === 'string') {
-            return {
-                message: rawMessage,
-                params: params || {},
-                options: options || {}
-            };
-        }
-
-        if (typeof rawMessage === 'object' && rawMessage !== null) {
-            messageSource = rawMessage.message || null;
-            messageParams = rawMessage.params || {};
-            messageOptions = rawMessage.options || {};
-        } else {
-            messageSource = rawMessage;
-        }
-
-        outputParams = {
-            ...(params || ({} as {[k: string]: unknown})),
-            ...(messageParams as {[k: string]: unknown})
-        };
-
-        outputOptions = {
-            ...(options || ({} as {[k: string]: unknown})),
-            ...(messageOptions as {[k: string]: unknown})
-        };
-
-        if (typeof messageSource === 'function') {
-            outputMessage = messageSource(outputParams);
-        } else {
-            outputMessage = messageSource;
-        }
-
-        return {
-            message: outputMessage || '',
-            params: outputParams,
-            options: outputOptions
-        };
     }
 }
 

@@ -10,67 +10,53 @@ type TStatus =
     | 'standBy'
     | null;
 
-interface IMessageObject {
+interface IResolvedMessage {
     message: string;
     params: {[k: string]: unknown};
     options: {
-        sortKey?: number;
+        sortIndex?: number;
     };
 }
 
-interface IRawMessageObject {
-    message?: string | ((data?: unknown) => string | null) | null;
+interface IMessageObject {
+    message?: string | ((params?: unknown) => string | null) | null;
     params?: {[k: string]: unknown};
     options?: {
-        sortKey?: number;
+        sortIndex?: number;
     };
 }
 
-type TRawMessage =
+type TMessage =
     | string
-    | ((data: unknown) => string | null)
-    | IRawMessageObject
+    | ((params: unknown) => string | null)
+    | IMessageObject
     | null;
 
-type TResult = boolean | null;
+type TValidationResult = boolean | null;
 
-interface IReport {
-    [k: string]: TResult;
+interface IValidationReport {
+    [k: string]: TValidationResult;
 }
 
-interface IMessages {
-    [k: string]: IMessageObject;
-}
-
-interface IData {
+interface IValidationData {
     [k: string]: unknown;
 }
 
-interface IPromises {
-    [k: string]: IPromise<boolean>;
-}
-
 interface IValidatorOutput {
-    result: TResult;
-    report: IReport;
-    messages: IMessages;
-    data: IData;
-    promises: IPromises;
+    result: TValidationResult;
+    report: IValidationReport;
+    messages: {[k: string]: IResolvedMessage};
+    data: IValidationData;
+    promises: {[k: string]: IPromise<boolean>};
 }
 
 interface IDeferContext {
     invalidate: (
-        rawMessage?: TRawMessage,
+        rawMessage?: TMessage,
         params?: {[k: string]: unknown}
     ) => void;
-    validate: (
-        rawMessage?: TRawMessage,
-        params?: {[k: string]: unknown}
-    ) => void;
-    disable: (
-        rawMessage?: TRawMessage,
-        params?: {[k: string]: unknown}
-    ) => void;
+    validate: (rawMessage?: TMessage, params?: {[k: string]: unknown}) => void;
+    disable: (rawMessage?: TMessage, params?: {[k: string]: unknown}) => void;
     abort: () => void;
     isActive: () => boolean;
     updateValue: () => void;
@@ -79,105 +65,81 @@ interface IDeferContext {
 type TDeferCache = Map<
     string,
     {
-        result: TResult;
-        rawMessage?: TRawMessage;
+        result: TValidationResult;
+        rawMessage?: TMessage;
         params?: {[k: string]: unknown};
     }
 >;
 
 type TDeferCallback = (value: string, context: IDeferContext) => Promise<void>;
 
-interface IOptions {
+interface IValidationUtilsOptions {
     keys?: Array<string>;
     enableDeferCache?: boolean;
     deferThrottlingDelay?: number | null;
 }
 
-type TBlockerInstance = (e: KeyboardEvent<HTMLInputElement>) => boolean;
-
 interface IBlocker {
     type: 'blocker';
     name: string;
-    plugin: TBlockerInstance;
+    plugin: (e: KeyboardEvent<HTMLInputElement>) => boolean;
 }
-
-type TFilterInstance = (value: string) => string;
 
 interface IFilter {
     type: 'filter';
     name: string;
-    plugin: TFilterInstance;
+    plugin: (value: string) => string;
 }
-
-type TValidatorInstance =
-    | string
-    | RegExp
-    | ((stringValue: string, rawValue?: unknown) => IValidatorOutput | boolean);
 
 interface IValidator {
     type: 'validator';
     name: string;
-    plugin: TValidatorInstance;
+    plugin:
+        | string
+        | RegExp
+        | ((
+              stringValue: string,
+              rawValue?: unknown
+          ) => IValidatorOutput | boolean);
     groupName?: string;
-    groupErrorMessages?: {[k: string]: TRawMessage | null};
-    errorMessages?: {[k: string]: TRawMessage | null};
+    groupErrorMessages?: {[k: string]: TMessage | null};
+    errorMessages?: {[k: string]: TMessage | null};
 }
-
-type TPresetInstance = TInputPlugin;
 
 interface IPreset {
     type: 'preset';
     name: string;
-    groupErrorMessages: {[k: string]: TRawMessage};
-    plugin: TPresetInstance;
+    groupErrorMessages: {[k: string]: TMessage};
+    plugin: TPlugin;
 }
 
-type TAllPlugins = IBlocker | IFilter | IValidator | IPreset;
+type TPluginCore = IBlocker | IFilter | IValidator | IPreset;
 
-type TPluginWrapper = (options?: {[k: string]: unknown}) => TAllPlugins;
+type TPluginWrapper = (options?: {[k: string]: unknown}) => TPluginCore;
 
-type TInputPlugin =
-    | (TAllPlugins | TPluginWrapper)
-    | Array<TAllPlugins | TPluginWrapper>;
+type TPlugin =
+    | (TPluginCore | TPluginWrapper)
+    | Array<TPluginCore | TPluginWrapper>;
 
-interface IRunValidatorsOutput {
-    [k: string]: IValidatorOutput;
-}
-
-interface IFormProps {
-    onValidationResult: null | TOnValidationHandler;
-    onMount: null | ((...args: Array<unknown>) => unknown);
-    children: ReactNode;
-    style: {[k: string]: unknown};
-    className: string;
-    customStyles: {
-        root: {[k: string]: unknown};
-    };
-    customClassNames: {
-        root: string;
-    };
-    globalTheme: 'default' | string | null;
-}
-
-interface IDataPayload {
+interface IFormPayload {
     [k: string]: string | Array<string>;
 }
 
-interface IFormIValidationObject {
+interface IFormValidationObject {
     [k: string]: IValidationObject;
 }
 
 type TOnValidationHandler = (
     validationResult: boolean,
-    dataPayload: IDataPayload,
-    formIValidationObject: IFormIValidationObject
+    dataPayload: IFormPayload,
+    formValidationObject: IFormValidationObject
 ) => void;
 
 interface IValidationObject {
-    result: TResult;
-    reports: {[k: string]: IReport};
-    messages: Array<IMessageObject>;
-    data: {[k: string]: IData};
+    result: TValidationResult;
+    reports: {[k: string]: IValidationReport};
+    messages: Array<IResolvedMessage>;
+    data: {[k: string]: IValidationData};
 }
 
 interface IInputProps {
@@ -202,71 +164,32 @@ type TInputRenderFn = (
 
 type TStringifier = (v: unknown, type: 'validation' | 'form') => string;
 
-interface IInputRendererProps {
-    name: string;
-    value: string;
-    voidValue: string | null;
-    booleanInput: boolean | null;
-    mandatory: boolean;
-    keepMissingStatus: boolean;
-    runFiltersBeforeValidators: boolean;
-    match: string | null;
-    errorMessages: {
-        mandatory?: string | null;
-        match?: string | null;
-    };
-    plugins: TInputPlugin;
-    stringifier: null | TStringifier;
-    deferValidation: boolean;
-    onValidationResult: null | ((...args: Array<unknown>) => unknown);
-    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
-    onChange: (e: ChangeEvent<HTMLInputElement> | Event) => void;
-    onBlur: (e: FocusEvent<HTMLInputElement>) => void;
-    inputRenderFn: null | TInputRenderFn;
-}
-
-interface IState {
-    value: unknown;
-    status: TStatus;
-    overrideStatus: TStatus | false;
-}
-
 export type {
     IBlocker,
-    IData,
-    IDataPayload,
     IDeferContext,
     IFilter,
-    IFormIValidationObject,
-    IFormProps,
+    IFormPayload,
+    IFormValidationObject,
     IInputProps,
     IInputRendererAPI,
-    IInputRendererProps,
     IMessageObject,
-    IMessages,
-    IOptions,
     IPreset,
-    IPromises,
-    IRawMessageObject,
-    IReport,
-    IRunValidatorsOutput,
-    IState,
+    IResolvedMessage,
+    IValidationData,
     IValidationObject,
+    IValidationReport,
+    IValidationUtilsOptions,
     IValidator,
     IValidatorOutput,
-    TAllPlugins,
-    TBlockerInstance,
     TDeferCache,
     TDeferCallback,
-    TFilterInstance,
-    TInputPlugin,
     TInputRenderFn,
+    TMessage,
     TOnValidationHandler,
+    TPlugin,
+    TPluginCore,
     TPluginWrapper,
-    TPresetInstance,
-    TRawMessage,
-    TResult,
     TStatus,
     TStringifier,
-    TValidatorInstance
+    TValidationResult
 };

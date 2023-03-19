@@ -1,11 +1,11 @@
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
-import type {IValidator, TRawMessage} from '../../../defines/common.types';
+import type {IValidator, TMessage} from '../../../defines/common.types';
 
 interface IWordValidatorOptions {
     valid?: Array<string>;
     invalid?: Array<string>;
     errorMessages?: {
-        generic?: TRawMessage;
+        generic?: TMessage;
     };
 }
 

@@ -1,8 +1,8 @@
+import type {ReactNode} from 'react';
 import React, {createContext} from 'react';
 import type {
-    IDataPayload,
-    IFormIValidationObject,
-    IFormProps,
+    IFormPayload,
+    IFormValidationObject,
     TOnValidationHandler
 } from '../../defines/common.types';
 import type {InputRenderer} from '../input-renderer/input-renderer';
@@ -16,6 +16,21 @@ const FormContext = createContext<{
 }>({
     formInstance: null
 });
+
+interface IFormProps {
+    onValidationResult: null | TOnValidationHandler;
+    onMount: null | ((...args: Array<unknown>) => unknown);
+    children: ReactNode;
+    style: {[k: string]: unknown};
+    className: string;
+    customStyles: {
+        root: {[k: string]: unknown};
+    };
+    customClassNames: {
+        root: string;
+    };
+    globalTheme: 'default' | string | null;
+}
 
 class Form extends React.Component<IFormProps> {
     static defaultProps = {
@@ -32,8 +47,8 @@ class Form extends React.Component<IFormProps> {
     registeredInputs: {[k: string]: InputRenderer};
 
     validationResult: boolean;
-    dataPayload: IDataPayload;
-    formIValidationObject: IFormIValidationObject;
+    dataPayload: IFormPayload;
+    formValidationObject: IFormValidationObject;
 
     linkedInputsMap: Map<string, Set<string>>;
 
@@ -52,7 +67,7 @@ class Form extends React.Component<IFormProps> {
 
         this.validationResult = false;
         this.dataPayload = {};
-        this.formIValidationObject = {};
+        this.formValidationObject = {};
 
         this.linkedInputsMap = new Map();
 
@@ -201,7 +216,7 @@ class Form extends React.Component<IFormProps> {
                 this.dataPayload[input.props.name] = input.getFormValue();
             }
 
-            this.formIValidationObject[input.props.name] =
+            this.formValidationObject[input.props.name] =
                 input.validationObject;
         }
 
@@ -209,7 +224,7 @@ class Form extends React.Component<IFormProps> {
             this.props.onValidationResult(
                 this.validationResult,
                 this.dataPayload,
-                this.formIValidationObject
+                this.formValidationObject
             );
         }
     }
@@ -310,7 +325,7 @@ class Form extends React.Component<IFormProps> {
         handler(
             this.validationResult,
             this.dataPayload,
-            this.formIValidationObject
+            this.formValidationObject
         );
     }
 
@@ -337,4 +352,5 @@ class Form extends React.Component<IFormProps> {
     }
 }
 
+export type {IFormProps};
 export {Form, FormContext, testIDs};

@@ -2,13 +2,13 @@ import type {KeyboardEvent} from 'react';
 import type {
     IBlocker,
     IFilter,
-    IRunValidatorsOutput,
     IValidator,
-    TInputPlugin
+    IValidatorOutput,
+    TPlugin
 } from '../../defines/common.types';
-import {breakdownPlugins} from './utils/breakdown-plugins/breakdown-plugins';
-import {mergePlugins} from './utils/merge-plugins/merge-plugins';
-import {runValidator} from './utils/run-validator/run-validator';
+import {breakdownPlugins} from '../../utils/breakdown-plugins/breakdown-plugins';
+import {mergePlugins} from '../../utils/merge-plugins/merge-plugins';
+import {runValidator} from '../../utils/run-validator/run-validator';
 
 class PluginManager {
     blockers: Array<IBlocker>;
@@ -29,8 +29,8 @@ class PluginManager {
     runValidators(
         stringValue: string,
         rawValue?: unknown
-    ): IRunValidatorsOutput {
-        const output: IRunValidatorsOutput = {};
+    ): {[k: string]: IValidatorOutput} {
+        const output: {[k: string]: IValidatorOutput} = {};
 
         for (const validator of this.validators) {
             const validatorOutput = runValidator(
@@ -61,7 +61,7 @@ class PluginManager {
         });
     }
 
-    loadPlugins(plugins: TInputPlugin) {
+    loadPlugins(plugins: TPlugin) {
         const {blockers, filters, validators} = breakdownPlugins(plugins);
         this.blockers = mergePlugins<IBlocker>(this.blockers, blockers);
         this.filters = mergePlugins<IFilter>(this.filters, filters);

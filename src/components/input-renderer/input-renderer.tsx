@@ -1,16 +1,47 @@
 import type {ChangeEvent, FocusEvent, KeyboardEvent} from 'react';
 import React from 'react';
 import {PluginManager} from '../../classes/plugin-manager/plugin-manager';
-import {ValidationUtils} from '../../classes/validation-utils/validation-utils';
 import type {
-    IInputRendererProps,
-    IRunValidatorsOutput,
-    IState,
-    IValidationObject
+    IValidationObject,
+    IValidatorOutput,
+    TInputRenderFn,
+    TPlugin,
+    TStatus,
+    TStringifier
 } from '../../defines/common.types';
+import {createResolvedMessage} from '../../utils/create-resolved-message/create-resolved-message';
 import {stringify} from '../../utils/stringify/stringify';
 import type {Form} from '../form/form';
 import {FormContext} from '../form/form';
+
+interface IInputRendererProps {
+    name: string;
+    value: string;
+    voidValue: string | null;
+    booleanInput: boolean | null;
+    mandatory: boolean;
+    keepMissingStatus: boolean;
+    runFiltersBeforeValidators: boolean;
+    match: string | null;
+    errorMessages: {
+        mandatory?: string | null;
+        match?: string | null;
+    };
+    plugins: TPlugin;
+    stringifier: null | TStringifier;
+    deferValidation: boolean;
+    onValidationResult: null | ((...args: Array<unknown>) => unknown);
+    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+    onChange: (e: ChangeEvent<HTMLInputElement> | Event) => void;
+    onBlur: (e: FocusEvent<HTMLInputElement>) => void;
+    inputRenderFn: null | TInputRenderFn;
+}
+
+interface IState {
+    value: unknown;
+    status: TStatus;
+    overrideStatus: TStatus | false;
+}
 
 class InputRenderer extends React.Component<IInputRendererProps, IState> {
     static contextType = FormContext;
@@ -50,7 +81,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     isMatched: boolean | null;
 
     pluginManager: PluginManager;
-    validatorsOutput: IRunValidatorsOutput;
+    validatorsOutput: {[k: string]: IValidatorOutput};
     validationObject: IValidationObject;
     attachedPromises: Set<Promise<boolean>>;
 
@@ -214,9 +245,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
             // MESSAGES
             if (!this.isDeferred && this.props.errorMessages.mandatory) {
                 this.validationObject.messages = [
-                    ValidationUtils.createMessageObject(
-                        this.props.errorMessages.mandatory
-                    )
+                    createResolvedMessage(this.props.errorMessages.mandatory)
                 ];
             }
         } else if (this.isMatched === false) {
@@ -225,9 +254,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
             // MESSAGES
             if (!this.isDeferred && this.props.errorMessages.match) {
                 this.validationObject.messages = [
-                    ValidationUtils.createMessageObject(
-                        this.props.errorMessages.match
-                    )
+                    createResolvedMessage(this.props.errorMessages.match)
                 ];
             }
         } else {
@@ -272,8 +299,8 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
                     .concat(Object.values(validatorOutput.messages))
                     .sort(
                         (msgA, msgB) =>
-                            (msgA.options.sortKey || 0) -
-                            (msgB.options.sortKey || 0)
+                            (msgA.options.sortIndex || 0) -
+                            (msgB.options.sortIndex || 0)
                     );
 
                 // DATA
@@ -535,4 +562,5 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     }
 }
 
+export type {IInputRendererProps};
 export {FormContext, InputRenderer};

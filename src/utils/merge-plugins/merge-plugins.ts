@@ -1,6 +1,6 @@
-import type {TAllPlugins} from '../../../../defines/common.types';
+import type {TPluginCore} from '../../defines/common.types';
 
-function mergePlugins<TMergePlugin extends TAllPlugins>(
+function mergePlugins<TMergePlugin extends TPluginCore>(
     ...pluginsArg: Array<TMergePlugin | Array<TMergePlugin>>
 ): Array<TMergePlugin> {
     const output: Array<TMergePlugin> = [];

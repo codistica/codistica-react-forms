@@ -6,7 +6,7 @@ const Template: ComponentStory<typeof MuiTextField> = (args) => (
     <MuiTextField {...args} />
 );
 
-interface IData {
+interface IParams {
     min: number;
     max: number;
 }
@@ -24,8 +24,10 @@ MultiValidator.args = {
             minLength: 5,
             maxLength: 20,
             errorMessages: {
-                minLength: (data) => `Minimum length is ${(data as IData).min}`,
-                maxLength: (data) => `Maximum length is ${(data as IData).max}`
+                minLength: (params) =>
+                    `Minimum length is ${(params as IParams).min}`,
+                maxLength: (params) =>
+                    `Maximum length is ${(params as IParams).max}`
             }
         }),
         emailValidator({
