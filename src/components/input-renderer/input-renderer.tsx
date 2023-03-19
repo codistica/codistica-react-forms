@@ -12,6 +12,7 @@ import type {
     TResult
 } from '../../classes/validation-utils/validation-utils';
 import {ValidationUtils} from '../../classes/validation-utils/validation-utils';
+import type {TStatus} from '../../defines/common.types';
 import {stringify} from '../../utils/stringify/stringify';
 import type {Form} from '../form/form';
 import {FormContext} from '../form/form';
@@ -23,19 +24,10 @@ interface IValidationObject {
     data: {[k: string]: IData};
 }
 
-type TStatus =
-    | 'valid'
-    | 'invalid'
-    | 'highlight'
-    | 'warning'
-    | 'missing'
-    | 'standBy'
-    | null;
-
 interface IInputProps {
     name: string;
     value: unknown;
-    onKeyDown: (e: KeyboardEvent) => void;
+    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     onBlur: (e: FocusEvent<HTMLInputElement>) => void;
 }
@@ -71,8 +63,8 @@ interface IInputRendererProps {
     stringifier: null | TStringifier;
     deferValidation: boolean;
     onValidationResult: null | ((...args: Array<unknown>) => unknown);
-    onKeyDown: (e: KeyboardEvent) => void;
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+    onChange: (e: ChangeEvent<HTMLInputElement> | Event) => void;
     onBlur: (e: FocusEvent<HTMLInputElement>) => void;
     inputRenderFn: null | TInputRenderFn;
 }
@@ -127,6 +119,8 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
 
     inputChangeTracker: string;
 
+    syntheticEvent: Event | null;
+
     constructor(props: IInputRendererProps) {
         super(props);
 
@@ -152,6 +146,8 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
 
         this.inputChangeTracker = props.value;
 
+        this.syntheticEvent = null;
+
         this.state = {
             status: null,
             value: props.value,
@@ -169,7 +165,6 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         this.highlight = this.highlight.bind(this);
         this.warn = this.warn.bind(this);
         this.clear = this.clear.bind(this);
-        this.emulateChange = this.emulateChange.bind(this);
         this.onKeyDownHandler = this.onKeyDownHandler.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.onBlurHandler = this.onBlurHandler.bind(this);
@@ -205,9 +200,19 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         }
     }
 
-    setNewValue(value: string) {
+    setNewValue(
+        value: string,
+        emulateChange?: boolean,
+        inputElement?: HTMLInputElement
+    ): void {
         // SET NEW VALUE
         this.setState({value}, () => {
+            if (emulateChange && inputElement) {
+                this.syntheticEvent = new Event('change', {bubbles: true});
+
+                inputElement.dispatchEvent(this.syntheticEvent);
+            }
+
             // VALIDATE NEW VALUE
             this.validateInput();
 
@@ -293,6 +298,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
                 const validationValue = this.props.runFiltersBeforeValidators
                     ? this.pluginManager.runFilters(this.getValidationValue())
                     : this.getValidationValue();
+
                 // RUN VALIDATORS
                 this.validatorsOutput =
                     this.pluginManager.runValidators(validationValue);
@@ -446,27 +452,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         this.setNewValue(this.props.value);
     }
 
-    emulateChange(inputElement: HTMLInputElement, value: string) {
-        const valueDescriptor = Object.getOwnPropertyDescriptor(
-            inputElement,
-            'value'
-        );
-
-        const prototype = Object.getPrototypeOf(inputElement) as object | null;
-
-        const prototypeValueDescriptor =
-            prototype && Object.getOwnPropertyDescriptor(prototype, 'value');
-
-        if (prototypeValueDescriptor && prototypeValueDescriptor.set) {
-            prototypeValueDescriptor.set.call(inputElement, value);
-        } else if (valueDescriptor && valueDescriptor.set) {
-            valueDescriptor.set.call(inputElement, value);
-        }
-
-        inputElement.dispatchEvent(new Event('change', {bubbles: true}));
-    }
-
-    onKeyDownHandler(e: KeyboardEvent) {
+    onKeyDownHandler(e: KeyboardEvent<HTMLInputElement>) {
         // CHAIN PASSED EVENT HANDLER IF NECESSARY
         if (typeof this.props.onKeyDown === 'function') {
             this.props.onKeyDown(e);
@@ -501,11 +487,18 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         }
     }
 
-    onChangeHandler(e: ChangeEvent<HTMLInputElement>) {
+    onChangeHandler(e: ChangeEvent<HTMLInputElement> | Event) {
         // CHAIN PASSED EVENT HANDLER IF NECESSARY
         if (typeof this.props.onChange === 'function') {
             this.props.onChange(e);
         }
+
+        if (e === this.syntheticEvent) {
+            this.syntheticEvent = null;
+            return;
+        }
+
+        const {target} = e as ChangeEvent<HTMLInputElement>;
 
         // INDICATE THAT THERE HAS BEEN INTERACTION
         this.isInteracted = true;
@@ -513,11 +506,11 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         if (
             typeof this.props.booleanInput === 'boolean'
                 ? this.props.booleanInput
-                : e.target.type === 'checkbox'
+                : target.type === 'checkbox'
         ) {
-            this.setNewValue(e.target.checked ? 'true' : 'false');
+            this.setNewValue(target.checked ? 'true' : 'false');
         } else {
-            this.setNewValue(e.target.value);
+            this.setNewValue(target.value);
         }
     }
 
@@ -551,8 +544,10 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
                 // UPDATE inputChangeTracker
                 this.inputChangeTracker = newValue;
 
-                // EMULATE INPUT CHANGE
-                this.emulateChange(e.target, newValue);
+                // INDICATE THAT THERE HAS BEEN INTERACTION
+                this.isInteracted = true;
+
+                this.setNewValue(newValue, true, e.target);
 
                 this.highlight();
             }
@@ -603,5 +598,5 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     }
 }
 
-export type {IInputRendererProps, IValidationObject, TInputPlugin, TStatus};
+export type {IInputRendererProps, IValidationObject};
 export {FormContext, InputRenderer};

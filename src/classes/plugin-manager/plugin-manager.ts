@@ -6,7 +6,7 @@ import type {
 } from '../validation-utils/validation-utils';
 import {ValidationUtils} from '../validation-utils/validation-utils';
 
-type TBlockerInstance = (e: KeyboardEvent) => boolean;
+type TBlockerInstance = (e: KeyboardEvent<HTMLInputElement>) => boolean;
 interface IBlocker {
     type: 'blocker';
     name: string;
@@ -44,7 +44,7 @@ interface IPreset {
 }
 
 type TAllPlugins = IBlocker | IFilter | IValidator | IPreset;
-type TPluginWrapper = (options?: unknown) => TAllPlugins;
+type TPluginWrapper = (options?: {[k: string]: unknown}) => TAllPlugins;
 
 type TInputPlugin =
     | (TAllPlugins | TPluginWrapper)
@@ -280,7 +280,7 @@ class PluginManager {
         return this.filters.reduce((acc, filter) => filter.plugin(acc), value);
     }
 
-    runBlockers(e: KeyboardEvent): boolean {
+    runBlockers(e: KeyboardEvent<HTMLInputElement>): boolean {
         const isPrintable = e.key && e.key.length === 1;
 
         return this.blockers.some((blocker) => {

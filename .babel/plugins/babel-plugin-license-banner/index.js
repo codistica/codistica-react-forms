@@ -1,5 +1,5 @@
-const getCommentContent = require('./internals/get-comment-content.js');
-const isComment = require('./internals/is-comment.js');
+const getCommentContent = require('./utils/get-comment-content.js');
+const isComment = require('./utils/is-comment.js');
 
 module.exports = function babelPluginLicenseBanner() {
     return {

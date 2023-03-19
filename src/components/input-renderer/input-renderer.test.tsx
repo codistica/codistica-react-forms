@@ -1,5 +1,6 @@
 import {act, render} from '@testing-library/react';
 import {default as userEvent} from '@testing-library/user-event';
+import {prettifyPreset} from '../../plugins/presets';
 import {lengthValidator} from '../../plugins/validators';
 import {InputRenderer} from './input-renderer';
 
@@ -76,7 +77,7 @@ describe('InputRenderer', () => {
         expect(input.value).toBe('THIS TEST SUCCEEDED');
     });
 
-    it('should properly validate using length validator', async () => {
+    it('should properly load and run a validator', async () => {
         const {getByTestId} = render(
             <InputRenderer
                 name={'test'}
@@ -128,5 +129,62 @@ describe('InputRenderer', () => {
 
         expect(input.value).toBe('Hello, World!!!!!!!!!!!');
         expect(status.textContent).toBe('invalid');
+    });
+
+    it('should properly load and run a preset', async () => {
+        const {getByTestId} = render(
+            <InputRenderer
+                name={'test'}
+                plugins={prettifyPreset}
+                inputRenderFn={(inputProps) => {
+                    return (
+                        <div data-testid={'root'}>
+                            <input
+                                data-testid={'input'}
+                                {...inputProps}
+                                value={inputProps.value as string}
+                            />
+                        </div>
+                    );
+                }}
+            />
+        );
+
+        const root = getByTestId('root') as HTMLDivElement;
+        const input = getByTestId('input') as HTMLInputElement;
+
+        expect(input.value).toBe('');
+
+        await act(async () => {
+            await userEvent.pointer({target: input, keys: '[MouseLeft]'});
+            await userEvent.keyboard('hello1 ');
+        });
+
+        expect(input.value).toBe('hello ');
+
+        await act(async () => {
+            await userEvent.pointer({target: root, keys: '[MouseLeft]'});
+        });
+
+        expect(input.value).toBe('Hello');
+
+        await act(async () => {
+            await userEvent.pointer({target: input, keys: '[MouseLeft]'});
+        });
+
+        expect(input.selectionStart).toBe(input.value.length);
+        expect(input.selectionEnd).toBe(input.selectionStart);
+
+        await act(async () => {
+            await userEvent.keyboard(',     world@   ');
+        });
+
+        expect(input.value).toBe('Hello world ');
+
+        await act(async () => {
+            await userEvent.pointer({target: root, keys: '[MouseLeft]'});
+        });
+
+        expect(input.value).toBe('Hello World');
     });
 });

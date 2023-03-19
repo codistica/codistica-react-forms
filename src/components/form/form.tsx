@@ -7,6 +7,9 @@ import type {
 import {testIDs} from './defines/test-ids';
 
 // TODO: REVIEW ALL TYPINGS
+// TODO: EXPORT CONSTANTS TO AVOID MAGIC STRINGS
+// TODO: IMPLEMENT defaultValue
+// TODO: PASS RESOLVED mandatory IN RENDERER SECOND ARGUMENT
 
 interface IDataPayload {
     [k: string]: string | Array<string>;

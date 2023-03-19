@@ -1,3 +1,10 @@
-type TDummy = unknown;
+type TStatus =
+    | 'valid'
+    | 'invalid'
+    | 'highlight'
+    | 'warning'
+    | 'missing'
+    | 'standBy'
+    | null;
 
-export type {TDummy};
+export type {TStatus};

@@ -1,4 +1,5 @@
 import type {ComponentMeta, ComponentStory} from '@storybook/react';
+import {prettifyPreset} from '../../plugins/presets';
 import {lengthValidator} from '../../plugins/validators';
 
 import {InputRenderer} from './input-renderer';
@@ -32,8 +33,14 @@ Optional.args = {
     mandatory: false
 };
 
-const WithLengthValidator = Template.bind({});
-WithLengthValidator.args = {
+const Preset = Template.bind({});
+Preset.args = {
+    name: 'test',
+    plugins: prettifyPreset
+};
+
+const Validator = Template.bind({});
+Validator.args = {
     name: 'test',
     plugins: lengthValidator({
         minLength: 10,
@@ -41,7 +48,7 @@ WithLengthValidator.args = {
     })
 };
 
-export {Default, Optional, WithLengthValidator};
+export {Default, Optional, Preset, Validator};
 
 export default {
     title: 'Components/InputRenderer',

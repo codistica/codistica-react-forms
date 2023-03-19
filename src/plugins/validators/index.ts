@@ -1,9 +1,9 @@
-import {asyncValidator} from './internals/async-validator';
-import {dateValidator} from './internals/date-validator';
-import {emailValidator} from './internals/email-validator';
-import {lengthValidator} from './internals/length-validator';
-import {passwordValidator} from './internals/password-validator';
-import {wordValidator} from './internals/word-validator';
+import {asyncValidator} from './async-validator/async-validator';
+import {dateValidator} from './date-validator/date-validator';
+import {emailValidator} from './email-validator/email-validator';
+import {lengthValidator} from './length-validator/length-validator';
+import {passwordValidator} from './password-validator/password-validator';
+import {wordValidator} from './word-validator/word-validator';
 
 export {
     asyncValidator,
