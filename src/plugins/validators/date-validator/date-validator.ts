@@ -1,6 +1,5 @@
-import type {IValidator} from '../../../classes/plugin-manager/plugin-manager';
-import type {TRawMessage} from '../../../classes/validation-utils/validation-utils';
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
+import type {IValidator, TRawMessage} from '../../../defines/common.types';
 import {toFullYear} from '../../../utils/date-utils';
 import {parseIntAll} from '../../../utils/number-utils';
 import {escape} from '../../../utils/reg-exp-utils';
@@ -148,7 +147,7 @@ function dateValidator(options: IDateValidatorOptions = {}): IValidator {
                 }
             }
 
-            return utils.getValidatorOutput();
+            return utils.getOutput();
         }
     };
 }

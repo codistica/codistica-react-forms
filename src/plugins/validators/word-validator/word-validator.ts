@@ -1,6 +1,5 @@
-import type {IValidator} from '../../../classes/plugin-manager/plugin-manager';
-import type {TRawMessage} from '../../../classes/validation-utils/validation-utils';
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
+import type {IValidator, TRawMessage} from '../../../defines/common.types';
 
 interface IWordValidatorOptions {
     valid?: Array<string>;
@@ -30,7 +29,7 @@ function wordValidator(options: IWordValidatorOptions = {}): IValidator {
                 utils.invalidate();
             }
 
-            return utils.getValidatorOutput();
+            return utils.getOutput();
         }
     };
 }

@@ -3,6 +3,7 @@ import {ValidationUtils} from './classes/validation-utils/validation-utils';
 import {Form, FormContext} from './components/form/form';
 import {InputRenderer} from './components/input-renderer/input-renderer';
 import type {TStatus} from './defines/common.types';
+import {STATUS} from './defines/constants';
 import {REG_EXPS} from './defines/reg-exps';
 import {useDummyHook} from './hooks/use-dummy-hook/use-dummy-hook';
 import * as Blockers from './plugins/blockers/index';
@@ -31,6 +32,7 @@ export {
     Presets,
     REG_EXPS,
     RegExpUtils,
+    STATUS,
     ValidationUtils,
     Validators,
     createHeartbeat,

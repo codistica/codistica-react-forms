@@ -1,4 +1,4 @@
-import type {IPreset} from '../../../classes/plugin-manager/plugin-manager';
+import type {IPreset} from '../../../defines/common.types';
 import {capitalizeFirstsFilter, uppercaseFilter} from '../../filters';
 
 function autoCapitalizePreset(): IPreset {

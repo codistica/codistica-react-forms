@@ -1,90 +1,17 @@
+import type {
+    IDeferContext,
+    IMessageObject,
+    IMessages,
+    IOptions,
+    IReport,
+    IValidatorOutput,
+    TDeferCache,
+    TDeferCallback,
+    TRawMessage
+} from '../../defines/common.types';
 import type {THeartbeat} from '../../utils/create-heartbeat/create-heartbeat';
 import {createHeartbeat} from '../../utils/create-heartbeat/create-heartbeat';
-import type {IPromise} from '../../utils/promise/promise';
 import {promise} from '../../utils/promise/promise';
-
-interface IMessageObject {
-    message: string;
-    params: {[k: string]: unknown};
-    options: {
-        sortKey?: number;
-    };
-}
-
-interface IRawMessageObject {
-    message?: string | ((data?: unknown) => string | null) | null;
-    params?: {[k: string]: unknown};
-    options?: {
-        sortKey?: number;
-    };
-}
-
-type TRawMessage =
-    | string
-    | ((data: unknown) => string | null)
-    | IRawMessageObject
-    | null;
-
-type TResult = boolean | null;
-
-interface IReport {
-    [k: string]: TResult;
-}
-
-interface IMessages {
-    [k: string]: IMessageObject;
-}
-
-interface IData {
-    [k: string]: unknown;
-}
-
-interface IPromises {
-    [k: string]: IPromise<boolean>;
-}
-
-interface IValidatorOutput {
-    result: TResult;
-    report: IReport;
-    messages: IMessages;
-    data: IData;
-    promises: IPromises;
-}
-
-interface IDeferContext {
-    invalidate: (
-        rawMessage?: TRawMessage,
-        params?: {[k: string]: unknown}
-    ) => void;
-    validate: (
-        rawMessage?: TRawMessage,
-        params?: {[k: string]: unknown}
-    ) => void;
-    disable: (
-        rawMessage?: TRawMessage,
-        params?: {[k: string]: unknown}
-    ) => void;
-    abort: () => void;
-    isActive: () => boolean;
-    updateValue: () => void;
-}
-
-type TDeferCache = Map<
-    string,
-    {
-        result: TResult;
-        rawMessage?: TRawMessage;
-        params?: {[k: string]: unknown};
-    }
->;
-
-type TDeferCallback = (value: string, context: IDeferContext) => Promise<void>;
-
-interface IOptions {
-    keys?: Array<string>;
-    enableDeferCache?: boolean;
-    deferThrottlingDelay?: number | null;
-}
 
 class ValidationUtils {
     options: Required<IOptions>;
@@ -132,7 +59,7 @@ class ValidationUtils {
         this.isStandBy = this.isStandBy.bind(this);
         this.isValid = this.isValid.bind(this);
         this.setData = this.setData.bind(this);
-        this.getValidatorOutput = this.getValidatorOutput.bind(this);
+        this.getOutput = this.getOutput.bind(this);
     }
 
     init(
@@ -459,7 +386,7 @@ class ValidationUtils {
         this.validatorOutput.result = result;
     }
 
-    getValidatorOutput(): IValidatorOutput {
+    getOutput(): IValidatorOutput {
         this.previousValue = this.value;
         return this.validatorOutput;
     }
@@ -516,14 +443,4 @@ class ValidationUtils {
     }
 }
 
-export type {
-    IData,
-    IMessageObject,
-    IMessages,
-    IPromises,
-    IReport,
-    IValidatorOutput,
-    TRawMessage,
-    TResult
-};
 export {ValidationUtils};

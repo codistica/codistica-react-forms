@@ -1,0 +1,11 @@
+const STATUS = {
+    VALID: 'VALID',
+    INVALID: 'INVALID',
+    HIGHLIGHT: 'HIGHLIGHT',
+    WARNING: 'WARNING',
+    MISSING: 'MISSING',
+    STANDBY: 'STANDBY',
+    IDLE: 'IDLE'
+};
+
+export {STATUS};

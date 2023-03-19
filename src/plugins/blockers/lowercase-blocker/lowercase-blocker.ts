@@ -1,4 +1,4 @@
-import type {IBlocker} from '../../../classes/plugin-manager/plugin-manager';
+import type {IBlocker} from '../../../defines/common.types';
 import {REG_EXPS} from '../../../defines/reg-exps';
 
 function lowercaseBlocker(): IBlocker {

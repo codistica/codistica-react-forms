@@ -1,4 +1,4 @@
-import type {IFilter} from '../../../classes/plugin-manager/plugin-manager';
+import type {IFilter} from '../../../defines/common.types';
 
 function uppercaseFilter(): IFilter {
     return {

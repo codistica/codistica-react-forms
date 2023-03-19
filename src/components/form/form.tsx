@@ -1,44 +1,15 @@
-import type {ReactNode} from 'react';
 import React, {createContext} from 'react';
 import type {
-    IValidationObject,
-    InputRenderer
-} from '../input-renderer/input-renderer';
+    IDataPayload,
+    IFormIValidationObject,
+    IFormProps,
+    TOnValidationHandler
+} from '../../defines/common.types';
+import type {InputRenderer} from '../input-renderer/input-renderer';
 import {testIDs} from './defines/test-ids';
 
 // TODO: REVIEW ALL TYPINGS
 // TODO: EXPORT CONSTANTS TO AVOID MAGIC STRINGS
-// TODO: IMPLEMENT defaultValue
-// TODO: PASS RESOLVED mandatory IN RENDERER SECOND ARGUMENT
-
-interface IDataPayload {
-    [k: string]: string | Array<string>;
-}
-
-interface IFormIValidationObject {
-    [k: string]: IValidationObject;
-}
-
-type TOnValidationHandler = (
-    validationResult: boolean,
-    dataPayload: IDataPayload,
-    formIValidationObject: IFormIValidationObject
-) => void;
-
-interface IProps {
-    onValidationResult: null | TOnValidationHandler;
-    onMount: null | ((...args: Array<unknown>) => unknown);
-    children: ReactNode;
-    style: {[k: string]: unknown};
-    className: string;
-    customStyles: {
-        root: {[k: string]: unknown};
-    };
-    customClassNames: {
-        root: string;
-    };
-    globalTheme: 'default' | string | null;
-}
 
 const FormContext = createContext<{
     formInstance: null | Form;
@@ -46,7 +17,7 @@ const FormContext = createContext<{
     formInstance: null
 });
 
-class Form extends React.Component<IProps> {
+class Form extends React.Component<IFormProps> {
     static defaultProps = {
         onValidationResult: null,
         onMount: null,
@@ -74,7 +45,7 @@ class Form extends React.Component<IProps> {
         formInstance: Form;
     };
 
-    constructor(props: IProps) {
+    constructor(props: IFormProps) {
         super(props);
 
         this.registeredInputs = {};
@@ -366,5 +337,4 @@ class Form extends React.Component<IProps> {
     }
 }
 
-export type {IFormIValidationObject};
 export {Form, FormContext, testIDs};

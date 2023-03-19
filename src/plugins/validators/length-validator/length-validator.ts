@@ -1,6 +1,5 @@
-import type {IValidator} from '../../../classes/plugin-manager/plugin-manager';
-import type {TRawMessage} from '../../../classes/validation-utils/validation-utils';
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
+import type {IValidator, TRawMessage} from '../../../defines/common.types';
 
 interface ILengthValidatorOptions {
     minLength?: number;
@@ -42,7 +41,7 @@ function lengthValidator(options: ILengthValidatorOptions = {}): IValidator {
                 });
             }
 
-            return utils.getValidatorOutput();
+            return utils.getOutput();
         }
     };
 }

@@ -1,6 +1,5 @@
-import type {IValidator} from '../../../classes/plugin-manager/plugin-manager';
-import type {TRawMessage} from '../../../classes/validation-utils/validation-utils';
 import {ValidationUtils} from '../../../classes/validation-utils/validation-utils';
+import type {IValidator, TRawMessage} from '../../../defines/common.types';
 import {REG_EXPS} from '../../../defines/reg-exps';
 
 interface IPasswordValidatorOptions {
@@ -101,7 +100,7 @@ function passwordValidator(
 
             utils.setData('strength', strength);
 
-            return utils.getValidatorOutput();
+            return utils.getOutput();
         }
     };
 }

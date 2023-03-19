@@ -2,6 +2,8 @@ import {render} from '@testing-library/react';
 import {InputRenderer} from '../input-renderer/input-renderer';
 import {Form, testIDs} from './form';
 
+// TODO: DEDUPE TESTS IN GENERAL (GROUP COMMON ACCESSORY LOGIC)
+
 describe('Form', () => {
     it('should render a form without errors', () => {
         const {getByTestId} = render(<Form />);

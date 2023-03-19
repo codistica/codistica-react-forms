@@ -1,79 +1,16 @@
-import type {ChangeEvent, FocusEvent, KeyboardEvent, ReactNode} from 'react';
+import type {ChangeEvent, FocusEvent, KeyboardEvent} from 'react';
 import React from 'react';
-import type {
-    IRunValidatorsOutput,
-    TInputPlugin
-} from '../../classes/plugin-manager/plugin-manager';
 import {PluginManager} from '../../classes/plugin-manager/plugin-manager';
-import type {
-    IData,
-    IMessageObject,
-    IReport,
-    TResult
-} from '../../classes/validation-utils/validation-utils';
 import {ValidationUtils} from '../../classes/validation-utils/validation-utils';
-import type {TStatus} from '../../defines/common.types';
+import type {
+    IInputRendererProps,
+    IRunValidatorsOutput,
+    IState,
+    IValidationObject
+} from '../../defines/common.types';
 import {stringify} from '../../utils/stringify/stringify';
 import type {Form} from '../form/form';
 import {FormContext} from '../form/form';
-
-interface IValidationObject {
-    result: TResult;
-    reports: {[k: string]: IReport};
-    messages: Array<IMessageObject>;
-    data: {[k: string]: IData};
-}
-
-interface IInputProps {
-    name: string;
-    value: unknown;
-    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-    onBlur: (e: FocusEvent<HTMLInputElement>) => void;
-}
-
-interface IInputRendererAPI {
-    status: TStatus;
-    validationObject: IValidationObject;
-    setNewValue: (value: string) => unknown;
-    setIsInteracted: (value: boolean) => unknown;
-}
-
-type TInputRenderFn = (
-    inputProps: IInputProps,
-    inputRendererAPI: IInputRendererAPI
-) => ReactNode;
-
-type TStringifier = (v: unknown, type: 'validation' | 'form') => string;
-
-interface IInputRendererProps {
-    name: string;
-    value: string;
-    voidValue: string | null;
-    booleanInput: boolean | null;
-    mandatory: boolean;
-    keepMissingStatus: boolean;
-    runFiltersBeforeValidators: boolean;
-    match: string | null;
-    errorMessages: {
-        mandatory?: string | null;
-        match?: string | null;
-    };
-    plugins: TInputPlugin;
-    stringifier: null | TStringifier;
-    deferValidation: boolean;
-    onValidationResult: null | ((...args: Array<unknown>) => unknown);
-    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
-    onChange: (e: ChangeEvent<HTMLInputElement> | Event) => void;
-    onBlur: (e: FocusEvent<HTMLInputElement>) => void;
-    inputRenderFn: null | TInputRenderFn;
-}
-
-interface IState {
-    value: unknown;
-    status: TStatus;
-    overrideStatus: TStatus | false;
-}
 
 class InputRenderer extends React.Component<IInputRendererProps, IState> {
     static contextType = FormContext;
@@ -598,5 +535,4 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     }
 }
 
-export type {IInputRendererProps, IValidationObject};
 export {FormContext, InputRenderer};

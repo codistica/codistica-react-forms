@@ -1,4 +1,4 @@
-import type {IFilter} from '../../../classes/plugin-manager/plugin-manager';
+import type {IFilter} from '../../../defines/common.types';
 import {REG_EXPS} from '../../../defines/reg-exps';
 
 function specialFilter(): IFilter {

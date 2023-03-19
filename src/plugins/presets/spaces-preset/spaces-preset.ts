@@ -1,4 +1,4 @@
-import type {IPreset} from '../../../classes/plugin-manager/plugin-manager';
+import type {IPreset} from '../../../defines/common.types';
 import {leadingSpaceBlocker, nonSingleSpaceBlocker} from '../../blockers';
 import {
     leadingSpaceFilter,

@@ -1,5 +1,4 @@
-import type {IPreset} from '../../../classes/plugin-manager/plugin-manager';
-import type {TRawMessage} from '../../../classes/validation-utils/validation-utils';
+import type {IPreset, TRawMessage} from '../../../defines/common.types';
 import {spaceBlocker} from '../../blockers';
 import {spaceFilter} from '../../filters';
 import {passwordValidator} from '../../validators';
