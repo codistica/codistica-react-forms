@@ -135,6 +135,7 @@ module.exports = function (api, options = {}) {
     }
 
     if (env !== 'development') {
+        ignore.push(/.+[\\/]stories[\\/].+$/);
         ignore.push(/.+\.stories\.(js|ts)x?$/);
     }
 

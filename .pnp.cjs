@@ -105,6 +105,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:18.2.0"],\
             ["rimraf", "npm:4.1.2"],\
+            ["tss-react", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:4.8.2"],\
             ["typescript", "patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"],\
             ["webpack", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:5.75.0"],\
             ["yarn", "npm:1.22.19"]\
@@ -5690,6 +5691,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:18.2.0"],\
             ["rimraf", "npm:4.1.2"],\
+            ["tss-react", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:4.8.2"],\
             ["typescript", "patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"],\
             ["webpack", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:5.75.0"],\
             ["yarn", "npm:1.22.19"]\
@@ -23571,6 +23573,39 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/tslib-npm-2.5.0-bb364efebd-ae3ed5f9ce.zip/node_modules/tslib/",\
           "packageDependencies": [\
             ["tslib", "npm:2.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["tss-react", [\
+        ["npm:4.8.2", {\
+          "packageLocation": "./.yarn/cache/tss-react-npm-4.8.2-715ebb9373-d3767c13a7.zip/node_modules/tss-react/",\
+          "packageDependencies": [\
+            ["tss-react", "npm:4.8.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:4.8.2", {\
+          "packageLocation": "./.yarn/__virtual__/tss-react-virtual-5db0239b70/0/cache/tss-react-npm-4.8.2-715ebb9373-d3767c13a7.zip/node_modules/tss-react/",\
+          "packageDependencies": [\
+            ["tss-react", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:4.8.2"],\
+            ["@emotion/cache", "npm:11.10.5"],\
+            ["@emotion/react", "virtual:1b604b3008794818c5fa3400b6dc4669f3b7ada819be1b55d38bb398585fd9a5293971b806176f3eac558280fbe4479505b13df141c83e93526d30a3e67122bb#npm:11.10.6"],\
+            ["@emotion/serialize", "npm:1.1.1"],\
+            ["@emotion/server", null],\
+            ["@emotion/utils", "npm:1.2.0"],\
+            ["@types/emotion__react", null],\
+            ["@types/emotion__server", null],\
+            ["@types/react", "npm:18.0.28"],\
+            ["react", "npm:18.2.0"]\
+          ],\
+          "packagePeers": [\
+            "@emotion/react",\
+            "@emotion/server",\
+            "@types/emotion__react",\
+            "@types/emotion__server",\
+            "@types/react",\
+            "react"\
           ],\
           "linkType": "HARD"\
         }]\

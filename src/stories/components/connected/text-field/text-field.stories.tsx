@@ -1,9 +1,11 @@
 import type {ComponentMeta, ComponentStory} from '@storybook/react';
-import {emailValidator, lengthValidator} from '../../../plugins/validators';
-import {MuiTextField} from './mui-text-field';
+import {spaceBlocker} from '../../../../plugins/blockers';
+import {spaceFilter} from '../../../../plugins/filters';
+import {emailValidator, lengthValidator} from '../../../../plugins/validators';
+import {TextField} from './text-field';
 
-const Template: ComponentStory<typeof MuiTextField> = (args) => (
-    <MuiTextField {...args} />
+const Template: ComponentStory<typeof TextField> = (args) => (
+    <TextField {...args} />
 );
 
 interface IParams {
@@ -35,7 +37,9 @@ MultiValidator.args = {
                 generic: 'Please check:',
                 format: '- Email format'
             }
-        })
+        }),
+        spaceBlocker,
+        spaceFilter
     ]
 };
 
@@ -52,9 +56,9 @@ Required.args = {
 export {MultiValidator, Required};
 
 export default {
-    title: 'Components/MuiTextField',
-    component: MuiTextField,
+    title: 'Demo/Components (Connected)/Text Field',
+    component: TextField,
     argTypes: {
         backgroundColor: {control: 'color'}
     }
-} as ComponentMeta<typeof MuiTextField>;
+} as ComponentMeta<typeof TextField>;

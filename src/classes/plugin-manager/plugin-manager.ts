@@ -63,6 +63,7 @@ class PluginManager {
 
     loadPlugins(plugins: TPlugin) {
         const {blockers, filters, validators} = breakdownPlugins(plugins);
+
         this.blockers = mergePlugins<IBlocker>(this.blockers, blockers);
         this.filters = mergePlugins<IFilter>(this.filters, filters);
         this.validators = mergePlugins<IValidator>(this.validators, validators);

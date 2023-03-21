@@ -8,9 +8,6 @@ import type {
 import type {InputRenderer} from '../input-renderer/input-renderer';
 import {testIDs} from './defines/test-ids';
 
-// TODO: REVIEW ALL TYPINGS
-// TODO: EXPORT CONSTANTS TO AVOID MAGIC STRINGS
-
 const FormContext = createContext<{
     formInstance: null | Form;
 }>({

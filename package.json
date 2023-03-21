@@ -47,9 +47,11 @@
         "cjs",
         "esm",
         "types",
+        "docs",
         "!stories",
+        "!*.stories.*",
         "!*.test.*",
-        "!**/jest.setup.*"
+        "!jest.setup.*"
     ],
     "packageManager": "yarn@3.4.1",
     "engines": {
@@ -67,9 +69,9 @@
         "build": "yarn run build:cjs && yarn run build:esm && yarn run build:types",
         "build:cjs": "cross-env NODE_ENV=production cross-env NPM_CONFIG_ESM=false babel ./src --out-dir ./cjs --copy-files --no-copy-ignored --source-maps --extensions \".ts,.tsx,.js,.jsx\"",
         "build:esm": "cross-env NODE_ENV=production cross-env NPM_CONFIG_ESM=true babel ./src --out-dir ./esm --copy-files --no-copy-ignored --source-maps --extensions \".ts,.tsx,.js,.jsx\"",
-        "build:types": "tsc --project ./tsconfig.json",
+        "build:types": "tsc --project ./tsconfig.build.json",
         "build:storybook": "build-storybook",
-        "cleanup": "rimraf cjs esm types .test ./node_modules .eslintcache",
+        "cleanup": "rimraf cjs esm types .test ./node_modules .eslintcache ./package.tgz",
         "format": "prettier --loglevel warn --write \"**/*.{ts,tsx,js,json,md,yml}\"",
         "lint": "yarn run lint:code && yarn run lint:types",
         "lint:code": "eslint \"**/*.{js,ts,tsx}\" --cache",
@@ -86,7 +88,7 @@
         "test": "yarn run test:unit",
         "test:ci": "yarn run test:unit-ci",
         "test:unit": "jest",
-        "test:unit-ci": "jest --ci --bail --watchAll=false",
+        "test:unit-ci": "jest --ci --bail --watchAll=false --coverage=false",
         "uninstall": "yarn run cleanup && rimraf ./.pnp.loader.mjs ./.pnp.cjs ./.yarn/cache"
     },
     "dependencies": {
@@ -169,6 +171,7 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "rimraf": "^4.1.2",
+        "tss-react": "^4.8.2",
         "typescript": "^4.9.4",
         "webpack": "^5.75.0",
         "yarn": "^1.22.19"

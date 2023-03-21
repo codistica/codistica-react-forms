@@ -51,6 +51,6 @@ Validator.args = {
 export {Default, Optional, Preset, Validator};
 
 export default {
-    title: 'Components/InputRenderer',
+    title: 'Framework/Components/Input Renderer',
     component: InputRenderer
 } as ComponentMeta<typeof InputRenderer>;

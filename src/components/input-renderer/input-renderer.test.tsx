@@ -1,5 +1,7 @@
 import {act, render} from '@testing-library/react';
 import {default as userEvent} from '@testing-library/user-event';
+import {nonNumberBlocker} from '../../plugins/blockers';
+import {spaceFilter} from '../../plugins/filters';
 import {prettifyPreset} from '../../plugins/presets';
 import {lengthValidator} from '../../plugins/validators';
 import {InputRenderer} from './input-renderer';
@@ -26,7 +28,7 @@ describe('InputRenderer', () => {
         expect(input).toBeVisible();
     });
 
-    it('should render an input with proper default value', () => {
+    it('should render an input with a default value', () => {
         const {getByTestId} = render(
             <InputRenderer
                 name={'test'}
@@ -131,6 +133,73 @@ describe('InputRenderer', () => {
         expect(status.textContent).toBe('invalid');
     });
 
+    it('should properly load and run a blocker', async () => {
+        const {getByTestId} = render(
+            <InputRenderer
+                name={'test'}
+                plugins={nonNumberBlocker}
+                inputRenderFn={(inputProps) => {
+                    return (
+                        <input
+                            data-testid={'input'}
+                            {...inputProps}
+                            value={inputProps.value as string}
+                        />
+                    );
+                }}
+            />
+        );
+
+        const input = getByTestId('input') as HTMLInputElement;
+
+        expect(input.value).toBe('');
+
+        await act(async () => {
+            await userEvent.pointer({target: input, keys: '[MouseLeft]'});
+            await userEvent.keyboard('Hel11o');
+        });
+
+        expect(input.value).toBe('11');
+    });
+
+    it('should properly load and run a filter', async () => {
+        const {getByTestId} = render(
+            <InputRenderer
+                name={'test'}
+                plugins={spaceFilter}
+                inputRenderFn={(inputProps) => {
+                    return (
+                        <div data-testid={'root'}>
+                            <input
+                                data-testid={'input'}
+                                {...inputProps}
+                                value={inputProps.value as string}
+                            />
+                        </div>
+                    );
+                }}
+            />
+        );
+
+        const root = getByTestId('root') as HTMLDivElement;
+        const input = getByTestId('input') as HTMLInputElement;
+
+        expect(input.value).toBe('');
+
+        await act(async () => {
+            await userEvent.pointer({target: input, keys: '[MouseLeft]'});
+            await userEvent.keyboard('h e l l o');
+        });
+
+        expect(input.value).toBe('h e l l o');
+
+        await act(async () => {
+            await userEvent.pointer({target: root, keys: '[MouseLeft]'});
+        });
+
+        expect(input.value).toBe('hello');
+    });
+
     it('should properly load and run a preset', async () => {
         const {getByTestId} = render(
             <InputRenderer
@@ -186,5 +255,91 @@ describe('InputRenderer', () => {
         });
 
         expect(input.value).toBe('Hello World');
+    });
+
+    it('should properly handle non default void value', async () => {
+        const {getByTestId} = render(
+            <InputRenderer
+                name={'test'}
+                value={'INITIAL'}
+                voidValue={'INITIAL'}
+                inputRenderFn={(inputProps, inputRendererAPI) => {
+                    return (
+                        <div data-testid={'root'}>
+                            <input
+                                data-testid={'input'}
+                                {...inputProps}
+                                value={inputProps.value as string}
+                            />
+                            <div data-testid={'status'}>
+                                {inputRendererAPI.status}
+                            </div>
+                        </div>
+                    );
+                }}
+            />
+        );
+
+        const root = getByTestId('root') as HTMLDivElement;
+        const input = getByTestId('input') as HTMLInputElement;
+        const status = getByTestId('status') as HTMLDivElement;
+
+        expect(input.value).toBe('INITIAL');
+        expect(status.textContent).toBe('');
+
+        await act(async () => {
+            await userEvent.pointer({target: input, keys: '[MouseLeft]'});
+            await userEvent.pointer({target: root, keys: '[MouseLeft]'});
+        });
+
+        expect(input.value).toBe('INITIAL');
+        expect(status.textContent).toBe('invalid');
+
+        await act(async () => {
+            await userEvent.pointer({target: input, keys: '[MouseLeft]'});
+            await userEvent.keyboard('{Backspace>7}');
+        });
+
+        expect(input.value).toBe('');
+        expect(status.textContent).toBe('valid');
+    });
+
+    it('should allow void value when not mandatory', async () => {
+        const {getByTestId} = render(
+            <InputRenderer
+                name={'test'}
+                value={'INITIAL'}
+                voidValue={'INITIAL'}
+                mandatory={false}
+                inputRenderFn={(inputProps, inputRendererAPI) => {
+                    return (
+                        <div>
+                            <input
+                                data-testid={'input'}
+                                {...inputProps}
+                                value={inputProps.value as string}
+                            />
+                            <div data-testid={'status'}>
+                                {inputRendererAPI.status}
+                            </div>
+                        </div>
+                    );
+                }}
+            />
+        );
+
+        const input = getByTestId('input') as HTMLInputElement;
+        const status = getByTestId('status') as HTMLDivElement;
+
+        expect(input.value).toBe('INITIAL');
+        expect(status.textContent).toBe('');
+
+        await act(async () => {
+            await userEvent.pointer({target: input, keys: '[MouseLeft]'});
+            await userEvent.pointer({target: status, keys: '[MouseLeft]'});
+        });
+
+        expect(input.value).toBe('INITIAL');
+        expect(status.textContent).toBe('');
     });
 });
