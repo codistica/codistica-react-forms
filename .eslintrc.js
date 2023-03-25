@@ -2,7 +2,7 @@ const SRC_GLOB = '{src,.storybook}/**';
 
 module.exports = {
     root: true,
-    extends: ['./.eslint/.eslintrc.base.js', './.eslint/.eslintrc.import.js'],
+    extends: ['./.eslint/.eslintrc.base.js'],
     overrides: [
         // *** PARSERS ***
 
@@ -16,7 +16,7 @@ module.exports = {
 
         {
             // TYPESCRIPT
-            files: [`${SRC_GLOB}/*.{ts,tsx}`, './tsconfig.d.ts'],
+            files: [`${SRC_GLOB}/*.{ts,tsx}`],
             extends: ['./.eslint/.eslintrc.typescript.js'],
             parser: '@typescript-eslint/parser',
             parserOptions: {
@@ -50,35 +50,44 @@ module.exports = {
             }
         },
 
-        // *** MISC ***
+        // *** CONFIGS ***
 
         {
-            // JEST SETUP
-            files: ['**/jest.setup.*'],
-            extends: ['./.eslint/.eslintrc.node-esm.js']
-        },
-        {
-            // JEST TESTS
-            files: ['**/*.test.*'],
-            extends: ['./.eslint/.eslintrc.jest.js']
-        },
-        {
-            // STORYBOOK SETUP
-            files: ['./.storybook/**/*'],
-            excludedFiles: ['./.storybook/main.js'],
+            // SOURCE - REACT
+            files: `${SRC_GLOB}/*.{ts,tsx,js,jsx}`,
             extends: [
+                './.eslint/.eslintrc.import.js',
                 './.eslint/.eslintrc.dom.js',
                 './.eslint/.eslintrc.react.js'
             ]
         },
         {
-            // STORYBOOK MAIN
+            // JEST - SETUP
+            files: ['**/jest.setup.*'],
+            extends: ['./.eslint/.eslintrc.node-esm.js']
+        },
+        {
+            // JEST - TESTS - JS
+            files: ['**/*.test.{ts,js}'],
+            extends: ['./.eslint/.eslintrc.jest.js']
+        },
+        {
+            // JEST - TESTS - REACT
+            files: ['**/*.test.{tsx,jsx}'],
+            extends: [
+                './.eslint/.eslintrc.jest.js',
+                './.eslint/.eslintrc.jest-dom.js',
+                './.eslint/.eslintrc.testing-library.js'
+            ]
+        },
+        {
+            // STORYBOOK - MAIN
             files: ['./.storybook/main.js'],
             parser: 'espree',
             extends: ['./.eslint/.eslintrc.node-cjs.js']
         },
         {
-            // STORYBOOK STORIES
+            // STORYBOOK - STORIES
             files: ['**/*.stories.*'],
             extends: ['./.eslint/.eslintrc.storybook.js']
         },

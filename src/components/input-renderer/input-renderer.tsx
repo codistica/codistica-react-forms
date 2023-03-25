@@ -1,13 +1,15 @@
-import type {ChangeEvent, FocusEvent, KeyboardEvent} from 'react';
+import type {FocusEvent, KeyboardEvent} from 'react';
 import React from 'react';
 import {PluginManager} from '../../classes/plugin-manager/plugin-manager';
 import type {
     IValidationObject,
     IValidatorOutput,
+    TChangeEvent,
     TInputRenderFn,
     TPlugin,
     TStatus,
-    TStringifier
+    TStringifier,
+    TTargetElement
 } from '../../defines/common.types';
 import {createResolvedMessage} from '../../utils/create-resolved-message/create-resolved-message';
 import {stringify} from '../../utils/stringify/stringify';
@@ -18,7 +20,6 @@ interface IInputRendererProps {
     name: string;
     value: string;
     voidValue: string | null;
-    booleanInput: boolean | null;
     mandatory: boolean;
     keepMissingStatus: boolean;
     runFiltersBeforeValidators: boolean;
@@ -28,12 +29,12 @@ interface IInputRendererProps {
         match?: string | null;
     };
     plugins: TPlugin;
-    stringifier: null | TStringifier;
+    stringifier: TStringifier;
     deferValidation: boolean;
     onValidationResult: null | ((...args: Array<unknown>) => unknown);
-    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
-    onChange: (e: ChangeEvent<HTMLInputElement> | Event) => void;
-    onBlur: (e: FocusEvent<HTMLInputElement>) => void;
+    onKeyDown: (e: KeyboardEvent<TTargetElement>) => void;
+    onChange: (e: TChangeEvent<TTargetElement> | Event) => void;
+    onBlur: (e: FocusEvent<TTargetElement>) => void;
     inputRenderFn: null | TInputRenderFn;
 }
 
@@ -53,7 +54,6 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     static defaultProps = {
         value: '',
         voidValue: '',
-        booleanInput: null,
         mandatory: true,
         keepMissingStatus: false,
         runFiltersBeforeValidators: false,
@@ -85,7 +85,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     validationObject: IValidationObject;
     attachedPromises: Set<Promise<boolean>>;
 
-    inputChangeTracker: string;
+    inputChangeTracker: unknown;
 
     syntheticEvent: Event | null;
 
@@ -169,9 +169,9 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     }
 
     setNewValue(
-        value: string,
+        value: unknown,
         emulateChange?: boolean,
-        inputElement?: HTMLInputElement
+        inputElement?: TTargetElement
     ): void {
         // SET NEW VALUE
         this.setState({value}, () => {
@@ -220,7 +220,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
     }
 
     checkMandatory() {
-        this.isVoid = this.state.value === this.props.voidValue;
+        this.isVoid = this.getValidationValue() === this.props.voidValue;
         return this.props.mandatory && this.isVoid;
     }
 
@@ -341,7 +341,10 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         // EMIT VALIDATION RESULT
         if (this.props.onValidationResult) {
             this.props.onValidationResult({
-                result: this.validationObject.result,
+                result:
+                    typeof this.validationObject.result === 'boolean'
+                        ? this.validationObject.result
+                        : true,
                 reports: this.validationObject.reports,
                 messages: this.validationObject.messages,
                 data: this.validationObject.data
@@ -416,7 +419,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         this.setNewValue(this.props.value);
     }
 
-    onKeyDownHandler(e: KeyboardEvent<HTMLInputElement>) {
+    onKeyDownHandler(e: KeyboardEvent<TTargetElement>) {
         // CHAIN PASSED EVENT HANDLER IF NECESSARY
         if (typeof this.props.onKeyDown === 'function') {
             this.props.onKeyDown(e);
@@ -451,7 +454,7 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
         }
     }
 
-    onChangeHandler(e: ChangeEvent<HTMLInputElement> | Event) {
+    onChangeHandler(e: TChangeEvent<TTargetElement> | Event) {
         // CHAIN PASSED EVENT HANDLER IF NECESSARY
         if (typeof this.props.onChange === 'function') {
             this.props.onChange(e);
@@ -462,23 +465,21 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
             return;
         }
 
-        const {target} = e as ChangeEvent<HTMLInputElement>;
+        const {target} = e as TChangeEvent<TTargetElement>;
 
         // INDICATE THAT THERE HAS BEEN INTERACTION
         this.isInteracted = true;
 
-        if (
-            typeof this.props.booleanInput === 'boolean'
-                ? this.props.booleanInput
-                : target.type === 'checkbox'
-        ) {
-            this.setNewValue(target.checked ? 'true' : 'false');
+        if ('type' in target && target.type === 'checkbox') {
+            this.setNewValue(
+                'checked' in target && target.checked ? 'true' : 'false'
+            );
         } else {
             this.setNewValue(target.value);
         }
     }
 
-    onBlurHandler(e: FocusEvent<HTMLInputElement>) {
+    onBlurHandler(e: FocusEvent<TTargetElement>) {
         // CHAIN PASSED EVENT HANDLER IF NECESSARY
         if (typeof this.props.onBlur === 'function') {
             this.props.onBlur(e);
@@ -497,12 +498,18 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
             // RESET inputChangeTracker
             this.inputChangeTracker = e.target.value;
 
-            if (e.target.type === 'checkbox' || e.target.type === 'radio') {
-                return;
+            if ('type' in e.target) {
+                if (e.target.type === 'checkbox' || e.target.type === 'radio') {
+                    return;
+                }
             }
 
             // RUN FILTERS
-            const newValue = this.pluginManager.runFilters(e.target.value);
+            const newValue = this.pluginManager.runFilters(
+                typeof e.target.value === 'string'
+                    ? e.target.value
+                    : this.props.stringifier(e.target.value, 'validation')
+            );
 
             if (newValue !== e.target.value) {
                 // UPDATE inputChangeTracker
@@ -523,7 +530,6 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
             name,
             value,
             voidValue,
-            booleanInput,
             mandatory,
             keepMissingStatus,
             runFiltersBeforeValidators,

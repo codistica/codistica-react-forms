@@ -4,7 +4,8 @@ import type {
     IFilter,
     IValidator,
     IValidatorOutput,
-    TPlugin
+    TPlugin,
+    TTargetElement
 } from '../../defines/common.types';
 import {breakdownPlugins} from '../../utils/breakdown-plugins/breakdown-plugins';
 import {mergePlugins} from '../../utils/merge-plugins/merge-plugins';
@@ -53,7 +54,7 @@ class PluginManager {
         return this.filters.reduce((acc, filter) => filter.plugin(acc), value);
     }
 
-    runBlockers(e: KeyboardEvent<HTMLInputElement>): boolean {
+    runBlockers(e: KeyboardEvent<TTargetElement>): boolean {
         const isPrintable = e.key && e.key.length === 1;
 
         return this.blockers.some((blocker) => {

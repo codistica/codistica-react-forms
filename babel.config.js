@@ -1,52 +1,18 @@
 const {licenseBanner} = require('./defines/license-banner.js');
-const {
-    engines,
-    browserslist,
-    dependencies,
-    devDependencies,
-    peerDependencies
-} = require('./package.json');
-
-const findVersion = (name) => {
-    const sources = [dependencies, devDependencies, peerDependencies];
-
-    for (const source of sources) {
-        if (!source) {
-            continue;
-        }
-
-        const keys = Object.keys(source);
-
-        for (const key of keys) {
-            if (name instanceof RegExp) {
-                if (name.test(key)) {
-                    return source[key];
-                }
-            } else if (key === name) {
-                return source[key];
-            }
-        }
-    }
-
-    return null;
-};
-
-const toExactVersion = (ver) => {
-    return ver.replace(/[^0-9.]/g, '');
-};
-
-const getVersion = (name, exact) => {
-    const ver = findVersion(name);
-
-    if (!ver) {
-        return undefined;
-    }
-
-    return exact ? toExactVersion(ver) : ver;
-};
+const {engines, browserslist} = require('./package.json');
+const {toExactVersion} = require('./utils/to-exact-version.js');
+const {getVersion} = require('./utils/get-version.js');
 
 module.exports = function (api, options = {}) {
-    const env = typeof options.env === 'string' ? options.env : api.env();
+    const env =
+        typeof options.env === 'string'
+            ? options.env
+            : api.env() || 'development';
+
+    const subEnv =
+        typeof options.subEnv === 'string'
+            ? options.subEnv
+            : process.env.NPM_CONFIG_SUB_ENV || '';
 
     const esm =
         typeof options.esm === 'boolean'
@@ -68,6 +34,7 @@ module.exports = function (api, options = {}) {
 
     const signature = JSON.stringify({
         env,
+        subEnv,
         esm,
         licenseNotice,
         targets,
@@ -80,6 +47,7 @@ module.exports = function (api, options = {}) {
     console.log('\n');
     console.log('BABEL CONFIG:');
     console.log('- ENV: ', env);
+    console.log('- SUB-ENV: ', subEnv);
     console.log('- ESM: ', esm);
     console.log('- License Notice: ', licenseNotice);
     console.log('- Transform Runtime Version: ', transformRuntimeVersion);
@@ -102,7 +70,8 @@ module.exports = function (api, options = {}) {
             // TODO: REMOVE AFTER REMOVING REACT CLASS COMPONENTS
             '@babel/plugin-transform-typescript',
             {
-                allowDeclareFields: true
+                allowDeclareFields: true,
+                isTSX: true
             }
         ],
         '@babel/plugin-proposal-class-properties',
@@ -129,12 +98,13 @@ module.exports = function (api, options = {}) {
 
     const ignore = [];
 
-    if (env !== 'test') {
+    if (env !== 'development' && env !== 'test') {
         ignore.push(/.+\.test\.(js|ts)x?$/);
         ignore.push(/.+jest\.setup\.(js|ts)x?$/);
+        ignore.push(/.+[\\/]test-utils[\\/].+$/);
     }
 
-    if (env !== 'development') {
+    if (env !== 'development' && subEnv !== 'storybook') {
         ignore.push(/.+[\\/]stories[\\/].+$/);
         ignore.push(/.+\.stories\.(js|ts)x?$/);
     }
@@ -154,7 +124,7 @@ module.exports = function (api, options = {}) {
         plugins,
         overrides: [
             {
-                test: ['**/*.jsx', '**/*.tsx'],
+                test: ['**/*.tsx', '**/*.jsx'],
                 presets: [
                     [
                         '@babel/preset-react',
@@ -188,7 +158,7 @@ module.exports = function (api, options = {}) {
                 sourceType: 'unambiguous'
             },
             {
-                // https://github.com/babel/babel/issues/15363
+                // FIXME: https://github.com/babel/babel/issues/15363
                 test: [`${__dirname}/src/**/*`],
                 plugins: licenseNotice
                     ? [

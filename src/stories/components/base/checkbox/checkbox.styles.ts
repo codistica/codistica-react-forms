@@ -9,16 +9,19 @@ interface IProps {
 const useStyles = makeStyles<IProps>()(({palette}, {status}) => {
     if (!status) {
         return {
-            notchedOutline: {}
+            root: {},
+            checked: {}
         };
     }
 
     const color = statusToColor(status);
 
     return {
-        notchedOutline: {
-            borderColor: palette[color].main + '!important',
-            borderWidth: 2
+        root: {
+            color: palette[color].light
+        },
+        checked: {
+            color: palette[color].dark
         }
     };
 });

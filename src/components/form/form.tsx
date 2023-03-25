@@ -1,9 +1,10 @@
-import type {ReactNode} from 'react';
+import type {HTMLAttributes, ReactNode} from 'react';
 import React, {createContext} from 'react';
 import type {
     IFormPayload,
     IFormValidationObject,
-    TOnValidationHandler
+    TOnValidationHandler,
+    TTargetElement
 } from '../../defines/common.types';
 import type {InputRenderer} from '../input-renderer/input-renderer';
 import {testIDs} from './defines/test-ids';
@@ -14,31 +15,17 @@ const FormContext = createContext<{
     formInstance: null
 });
 
-interface IFormProps {
+interface IFormProps extends HTMLAttributes<HTMLFormElement> {
     onValidationResult: null | TOnValidationHandler;
-    onMount: null | ((...args: Array<unknown>) => unknown);
+    onMount: null | ((formAPI: Form) => void);
     children: ReactNode;
-    style: {[k: string]: unknown};
-    className: string;
-    customStyles: {
-        root: {[k: string]: unknown};
-    };
-    customClassNames: {
-        root: string;
-    };
-    globalTheme: 'default' | string | null;
 }
 
 class Form extends React.Component<IFormProps> {
     static defaultProps = {
         onValidationResult: null,
         onMount: null,
-        children: null,
-        style: {},
-        className: '',
-        customStyles: {},
-        customClassNames: {},
-        globalTheme: 'default'
+        children: null
     };
 
     registeredInputs: {[k: string]: InputRenderer};
@@ -279,14 +266,12 @@ class Form extends React.Component<IFormProps> {
         }
     }
 
-    getInputElementByName(inputName: string): HTMLInputElement | null {
+    getInputElementByName(inputName: string): TTargetElement | null {
         if (!this.formRef.current) {
             return null;
         }
 
-        return (this.formRef.current as HTMLElement).querySelector(
-            `input[name="${inputName}"]`
-        );
+        return this.formRef.current.querySelector(`input[name="${inputName}"]`);
     }
 
     getInputByName(inputName: string): InputRenderer | null {
@@ -327,17 +312,7 @@ class Form extends React.Component<IFormProps> {
     }
 
     render() {
-        const {
-            onValidationResult,
-            onMount,
-            children,
-            style,
-            className,
-            customStyles,
-            customClassNames,
-            globalTheme,
-            ...other
-        } = this.props;
+        const {onValidationResult, onMount, children, ...other} = this.props;
 
         return (
             <form data-testid={testIDs.root} {...other} ref={this.formRef}>

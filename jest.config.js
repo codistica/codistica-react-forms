@@ -3,7 +3,7 @@ const escape = require('escape-string-regexp');
 
 const TARGETS = {
     BABEL_FILES: '^.+\\.[jt]sx?$',
-    UNSUPPORTED_FILES: '^(?!.*\\.(js|jsx|ts|tsx|json)$)',
+    UNSUPPORTED_FILES: '^(?!.*\\.(ts|tsx|js|jsx|json)$)',
     CSS_MODULES: '\\.module\\.css$'
 };
 

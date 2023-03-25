@@ -10,6 +10,18 @@ type TStatus =
     | 'standBy'
     | null;
 
+interface IUnknownTarget extends HTMLElement {
+    value: unknown;
+}
+
+type TTargetElement =
+    | HTMLInputElement
+    | HTMLTextAreaElement
+    | HTMLButtonElement
+    | IUnknownTarget;
+
+type TChangeEvent<T> = ChangeEvent<T>;
+
 interface IResolvedMessage {
     message: string;
     params: {[k: string]: unknown};
@@ -82,7 +94,7 @@ interface IValidationUtilsOptions {
 interface IBlocker {
     type: 'blocker';
     name: string;
-    plugin: (e: KeyboardEvent<HTMLInputElement>) => boolean;
+    plugin: (e: KeyboardEvent<TTargetElement>) => boolean;
 }
 
 interface IFilter {
@@ -145,9 +157,9 @@ interface IValidationObject {
 interface IInputProps {
     name: string;
     value: unknown;
-    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-    onBlur: (e: FocusEvent<HTMLInputElement>) => void;
+    onKeyDown: (e: KeyboardEvent<TTargetElement>) => void;
+    onChange: (e: TChangeEvent<TTargetElement>) => void;
+    onBlur: (e: FocusEvent<TTargetElement>) => void;
 }
 
 interface IInputRendererAPI {
@@ -175,12 +187,14 @@ export type {
     IMessageObject,
     IPreset,
     IResolvedMessage,
+    IUnknownTarget,
     IValidationData,
     IValidationObject,
     IValidationReport,
     IValidationUtilsOptions,
     IValidator,
     IValidatorOutput,
+    TChangeEvent,
     TDeferCache,
     TDeferCallback,
     TInputRenderFn,
@@ -191,5 +205,6 @@ export type {
     TPluginWrapper,
     TStatus,
     TStringifier,
+    TTargetElement,
     TValidationResult
 };

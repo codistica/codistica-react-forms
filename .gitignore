@@ -4,6 +4,7 @@
 esm
 cjs
 types
+storybook-static
 
 ### Misc ###
 .test

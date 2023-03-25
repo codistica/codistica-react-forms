@@ -23,10 +23,20 @@ function wordValidator(options: IWordValidatorOptions = {}): IValidator {
         plugin(value) {
             utils.init(value, null);
 
-            if (valid.some((word) => value === word)) {
-                utils.validate();
-            } else if (invalid.some((word) => value === word)) {
-                utils.invalidate();
+            if (invalid.length) {
+                if (invalid.some((word) => value === word)) {
+                    utils.invalidate();
+                } else {
+                    utils.validate();
+                }
+            }
+
+            if (valid.length) {
+                if (valid.some((word) => value === word)) {
+                    utils.validate();
+                } else {
+                    utils.invalidate();
+                }
             }
 
             return utils.getOutput();

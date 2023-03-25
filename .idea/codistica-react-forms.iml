@@ -5,6 +5,7 @@
       <excludePattern pattern="esm" />
       <excludePattern pattern="cjs" />
       <excludePattern pattern="types" />
+      <excludePattern pattern="storybook-static" />
       <excludePattern pattern=".test" />
       <excludePattern pattern=".eslintcache" />
     </content>

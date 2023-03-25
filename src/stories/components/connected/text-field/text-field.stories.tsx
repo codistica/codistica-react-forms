@@ -15,7 +15,6 @@ interface IParams {
 
 const MultiValidator = Template.bind({});
 MultiValidator.args = {
-    variant: 'outlined',
     label: 'Length Validator',
     required: true,
     errorMessages: {
@@ -45,7 +44,6 @@ MultiValidator.args = {
 
 const Required = Template.bind({});
 Required.args = {
-    variant: 'outlined',
     label: 'Required',
     required: true,
     errorMessages: {

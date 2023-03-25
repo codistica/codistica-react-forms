@@ -40,7 +40,7 @@ const Button: FC<IButtonProps> = ({
 
     return (
         <button
-            type='button'
+            type={'button'}
             className={[
                 'storybook-button',
                 `storybook-button--${size}`,

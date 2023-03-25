@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import type {FC} from 'react';
 import {useDummyHook} from './use-dummy-hook';
 
@@ -19,10 +19,13 @@ const Component: FC<IComponentProps> = ({str}) => {
 
 describe('dummy test', () => {
     it('should dummy test', () => {
-        const {getByTestId} = render(<Component str={'TEST'} />);
-        const root = getByTestId(defines.componentTestIds.root);
+        render(<Component str={'TEST'} />);
+
+        const root = screen.getByTestId<HTMLDivElement>(
+            defines.componentTestIds.root
+        );
 
         expect(root).toBeVisible();
-        expect(root.textContent).toBe('TEST');
+        expect(root).toHaveTextContent('TEST');
     });
 });

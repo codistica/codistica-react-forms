@@ -48,7 +48,7 @@ module.exports = {
         'react/react-in-jsx-scope': 'off',
         'react/jsx-filename-extension': [
             'error',
-            {extensions: ['.jsx', '.tsx']}
+            {extensions: ['.tsx', '.jsx']}
         ]
     }
 };
