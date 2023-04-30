@@ -167,6 +167,9 @@ interface IInputRendererAPI {
     validationObject: IValidationObject;
     setNewValue: (value: string) => unknown;
     setIsInteracted: (value: boolean) => unknown;
+    highlight: (duration: number) => void;
+    warn: (duration: number) => void;
+    clear: () => void;
 }
 
 type TInputRenderFn = (

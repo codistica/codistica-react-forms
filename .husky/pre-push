@@ -3,6 +3,7 @@ command -v git-lfs >/dev/null 2>&1 || { echo >&2 "\nThis repository is configure
 git lfs pre-push "$@"
 
 yarn || exit 1
+yarn run cleanup || exit 1
 yarn run build || exit 1
 yarn run lint:format || exit 1
 yarn run lint:code || exit 1

@@ -1,3 +1,3 @@
-import {wait} from './wait';
+import {wait} from './wait/wait';
 
 export {wait};

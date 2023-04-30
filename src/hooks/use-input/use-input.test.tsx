@@ -1,6 +1,11 @@
 import {render, screen, waitFor} from '@testing-library/react';
 import {default as userEvent} from '@testing-library/user-event';
-import type {IUnknownTarget, TChangeEvent} from '../../defines/common.types';
+import type {FC} from 'react';
+import type {
+    IUnknownTarget,
+    TChangeEvent,
+    TTargetElement
+} from '../../defines/common.types';
 import {nonNumberBlocker} from '../../plugins/blockers';
 import {spaceFilter} from '../../plugins/filters';
 import {prettifyPreset} from '../../plugins/presets';
@@ -10,24 +15,48 @@ import {
     wordValidator
 } from '../../plugins/validators';
 import {wait} from '../../utils/test-utils';
-import {InputRenderer} from './input-renderer';
+import type {IOptions} from './use-input';
+import {useInput} from './use-input';
+
+interface ITestInputProps extends IOptions {
+    proxies?: {
+        onChange?: (
+            sup: (e: TChangeEvent<TTargetElement>) => void,
+            e: TChangeEvent<TTargetElement>
+        ) => void;
+    };
+}
+
+const TestInput: FC<ITestInputProps> = ({proxies, ...options}) => {
+    const {bind, api} = useInput(options);
+
+    return (
+        <div data-testid={'root'}>
+            <input
+                {...bind}
+                value={bind.value as string}
+                onChange={(e) => {
+                    if (proxies && proxies.onChange) {
+                        return proxies.onChange(bind.onChange, e);
+                    } else {
+                        return bind.onChange(e);
+                    }
+                }}
+                data-testid={'input'}
+            />
+
+            <div data-testid={'status'}>{api.status}</div>
+
+            <div data-testid={'messages'}>
+                {api.validationObject.messages.map(({message}) => message)}
+            </div>
+        </div>
+    );
+};
 
 describe('InputRenderer', () => {
     it('should render an input', () => {
-        render(
-            <InputRenderer
-                name={'test'}
-                inputRenderFn={(inputProps) => {
-                    return (
-                        <input
-                            data-testid={'input'}
-                            {...inputProps}
-                            value={inputProps.value as string}
-                        />
-                    );
-                }}
-            />
-        );
+        render(<TestInput name={'test'} />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -35,21 +64,7 @@ describe('InputRenderer', () => {
     });
 
     it('should render an input with a default value', () => {
-        render(
-            <InputRenderer
-                name={'test'}
-                value={'DEFAULT'}
-                inputRenderFn={(inputProps) => {
-                    return (
-                        <input
-                            data-testid={'input'}
-                            {...inputProps}
-                            value={inputProps.value as string}
-                        />
-                    );
-                }}
-            />
-        );
+        render(<TestInput name={'test'} defaultValue={'DEFAULT'} />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -57,21 +72,7 @@ describe('InputRenderer', () => {
     });
 
     it('should update input value on typing', async () => {
-        render(
-            <InputRenderer
-                name={'test'}
-                value={'THIS TEST'}
-                inputRenderFn={(inputProps) => {
-                    return (
-                        <input
-                            data-testid={'input'}
-                            {...inputProps}
-                            value={inputProps.value as string}
-                        />
-                    );
-                }}
-            />
-        );
+        render(<TestInput name={'test'} defaultValue={'THIS TEST'} />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -85,24 +86,7 @@ describe('InputRenderer', () => {
 
     it('should validate after interaction if "deferValidation" is "true"', () => {
         render(
-            <InputRenderer
-                name={'test'}
-                mandatory={true}
-                deferValidation={true}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
-            />
+            <TestInput name={'test'} mandatory={true} deferValidation={true} />
         );
 
         const status = screen.getByTestId<HTMLDivElement>('status');
@@ -112,24 +96,7 @@ describe('InputRenderer', () => {
 
     it('should validate before interaction if "deferValidation" is "false"', () => {
         render(
-            <InputRenderer
-                name={'test'}
-                mandatory={true}
-                deferValidation={false}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
-            />
+            <TestInput name={'test'} mandatory={true} deferValidation={false} />
         );
 
         const status = screen.getByTestId<HTMLDivElement>('status');
@@ -139,24 +106,11 @@ describe('InputRenderer', () => {
 
     it('should keep "missing" status after validation if "keepMissingStatus" is "true"', () => {
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 mandatory={true}
                 deferValidation={false}
                 keepMissingStatus={true}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -167,27 +121,12 @@ describe('InputRenderer', () => {
 
     it('should pass "mandatory" error message when required', () => {
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 mandatory={true}
                 deferValidation={false}
                 errorMessages={{
                     mandatory: 'error-message'
-                }}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'messages'}>
-                                {inputRendererAPI.validationObject.messages.map(
-                                    ({message}) => message
-                                )}
-                            </div>
-                        </div>
-                    );
                 }}
             />
         );
@@ -199,26 +138,12 @@ describe('InputRenderer', () => {
 
     it('should load and run a validator', async () => {
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 plugins={lengthValidator({
                     minLength: 10,
                     maxLength: 15
                 })}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -246,21 +171,7 @@ describe('InputRenderer', () => {
     });
 
     it('should load and run a blocker', async () => {
-        render(
-            <InputRenderer
-                name={'test'}
-                plugins={nonNumberBlocker}
-                inputRenderFn={(inputProps) => {
-                    return (
-                        <input
-                            data-testid={'input'}
-                            {...inputProps}
-                            value={inputProps.value as string}
-                        />
-                    );
-                }}
-            />
-        );
+        render(<TestInput name={'test'} plugins={nonNumberBlocker} />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -273,23 +184,7 @@ describe('InputRenderer', () => {
     });
 
     it('should load and run a filter', async () => {
-        render(
-            <InputRenderer
-                name={'test'}
-                plugins={spaceFilter}
-                inputRenderFn={(inputProps) => {
-                    return (
-                        <div data-testid={'root'}>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                        </div>
-                    );
-                }}
-            />
-        );
+        render(<TestInput name={'test'} plugins={spaceFilter} />);
 
         const root = screen.getByTestId<HTMLDivElement>('root');
         const input = screen.getByTestId<HTMLInputElement>('input');
@@ -307,23 +202,7 @@ describe('InputRenderer', () => {
     });
 
     it('should load and run a preset', async () => {
-        render(
-            <InputRenderer
-                name={'test'}
-                plugins={prettifyPreset}
-                inputRenderFn={(inputProps) => {
-                    return (
-                        <div data-testid={'root'}>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                        </div>
-                    );
-                }}
-            />
-        );
+        render(<TestInput name={'test'} plugins={prettifyPreset} />);
 
         const root = screen.getByTestId<HTMLDivElement>('root');
         const input = screen.getByTestId<HTMLInputElement>('input');
@@ -355,24 +234,10 @@ describe('InputRenderer', () => {
 
     it('should handle non default "voidValue"', async () => {
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
-                value={'INITIAL'}
+                defaultValue={'INITIAL'}
                 voidValue={'INITIAL'}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div data-testid={'root'}>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -396,27 +261,13 @@ describe('InputRenderer', () => {
         expect(status).toHaveTextContent('valid');
     });
 
-    it('should successfully validate a "value" if equal to "voidValue" when not mandatory', async () => {
+    it('should successfully validate a "defaultValue" if equal to "voidValue" when not mandatory', async () => {
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
-                value={'INITIAL'}
+                defaultValue={'INITIAL'}
                 voidValue={'INITIAL'}
                 mandatory={false}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -430,12 +281,12 @@ describe('InputRenderer', () => {
         await userEvent.pointer({target: status, keys: '[MouseLeft]'});
 
         expect(input.value).toBe('INITIAL');
-        expect(status).toHaveTextContent(''); // FIXME
+        expect(status).toHaveTextContent('valid');
     });
 
     it('should run filters before validators if "runFiltersBeforeValidators" is "true"', async () => {
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 runFiltersBeforeValidators={true}
                 plugins={[
@@ -444,20 +295,6 @@ describe('InputRenderer', () => {
                     }),
                     spaceFilter
                 ]}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -486,23 +323,12 @@ describe('InputRenderer', () => {
         const onValidationResultHandler = jest.fn();
 
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 onKeyDown={onKeydownHandler}
                 onChange={onChangeHandler}
                 onBlur={onBlurHandler}
                 onValidationResult={onValidationResultHandler}
-                inputRenderFn={(inputProps) => {
-                    return (
-                        <div data-testid={'root'}>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -571,27 +397,13 @@ describe('InputRenderer', () => {
         });
 
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 plugins={asyncValidator({
                     executor,
                     deferThrottlingDelay: 0,
                     enableDeferCache: false
                 })}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -625,27 +437,13 @@ describe('InputRenderer', () => {
         });
 
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 plugins={asyncValidator({
                     executor,
                     deferThrottlingDelay: 0,
                     enableDeferCache: true
                 })}
-                inputRenderFn={(inputProps, inputRendererAPI) => {
-                    return (
-                        <div>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
-                }}
             />
         );
 
@@ -675,35 +473,20 @@ describe('InputRenderer', () => {
         });
 
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 stringifier={stringifier}
                 plugins={wordValidator({valid: ['stringifier-output']})}
-                inputRenderFn={(
-                    {onChange, ...inputProps},
-                    inputRendererAPI
-                ) => {
-                    return (
-                        <div>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                onChange={(e) => {
-                                    onChange({
-                                        ...e,
-                                        target: {
-                                            ...e.target,
-                                            value: {}
-                                        }
-                                    } as TChangeEvent<IUnknownTarget>);
-                                }}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
+                proxies={{
+                    onChange: (sup, e) => {
+                        sup({
+                            ...e,
+                            target: {
+                                ...e.target,
+                                value: {}
+                            }
+                        } as TChangeEvent<IUnknownTarget>);
+                    }
                 }}
             />
         );
@@ -724,34 +507,19 @@ describe('InputRenderer', () => {
 
     it('should use internal stringifier', async () => {
         render(
-            <InputRenderer
+            <TestInput
                 name={'test'}
                 plugins={wordValidator({valid: ['1234']})}
-                inputRenderFn={(
-                    {onChange, ...inputProps},
-                    inputRendererAPI
-                ) => {
-                    return (
-                        <div>
-                            <input
-                                data-testid={'input'}
-                                {...inputProps}
-                                onChange={(e) => {
-                                    onChange({
-                                        ...e,
-                                        target: {
-                                            ...e.target,
-                                            value: 1234
-                                        }
-                                    } as TChangeEvent<IUnknownTarget>);
-                                }}
-                                value={inputProps.value as string}
-                            />
-                            <div data-testid={'status'}>
-                                {inputRendererAPI.status}
-                            </div>
-                        </div>
-                    );
+                proxies={{
+                    onChange: (sup, e) => {
+                        sup({
+                            ...e,
+                            target: {
+                                ...e.target,
+                                value: 1234
+                            }
+                        } as TChangeEvent<IUnknownTarget>);
+                    }
                 }}
             />
         );

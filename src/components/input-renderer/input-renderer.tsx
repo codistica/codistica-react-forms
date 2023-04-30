@@ -561,7 +561,10 @@ class InputRenderer extends React.Component<IInputRendererProps, IState> {
                     status: this.state.overrideStatus || this.state.status,
                     validationObject: this.validationObject,
                     setNewValue: this.setNewValue.bind(this),
-                    setIsInteracted: this.setIsInteracted.bind(this)
+                    setIsInteracted: this.setIsInteracted.bind(this),
+                    highlight: this.highlight.bind(this),
+                    warn: this.warn.bind(this),
+                    clear: this.clear.bind(this)
                 }
             )
         );

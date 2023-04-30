@@ -3,10 +3,10 @@ import React, {createContext} from 'react';
 import type {
     IFormPayload,
     IFormValidationObject,
+    IValidationObject,
     TOnValidationHandler,
     TTargetElement
 } from '../../defines/common.types';
-import type {InputRenderer} from '../input-renderer/input-renderer';
 import {testIDs} from './defines/test-ids';
 
 const FormContext = createContext<{
@@ -14,6 +14,21 @@ const FormContext = createContext<{
 }>({
     formInstance: null
 });
+
+interface ILegacyInputRef {
+    id: string;
+    props: {
+        name: string;
+        match?: string | null;
+    };
+    validateInput: () => void;
+    getValidationValue: () => string;
+    getFormValue: () => string;
+    validationObject: IValidationObject;
+    isInteracted: boolean;
+    warn: (duration?: number) => void;
+    clear: (duration?: number) => void;
+}
 
 interface IFormProps extends HTMLAttributes<HTMLFormElement> {
     onValidationResult: null | TOnValidationHandler;
@@ -28,7 +43,7 @@ class Form extends React.Component<IFormProps> {
         children: null
     };
 
-    registeredInputs: {[k: string]: InputRenderer};
+    registeredInputs: {[k: string]: ILegacyInputRef};
 
     validationResult: boolean;
     dataPayload: IFormPayload;
@@ -83,14 +98,14 @@ class Form extends React.Component<IFormProps> {
         }
     }
 
-    registerInput(input: InputRenderer) {
+    registerInput(input: ILegacyInputRef) {
         if (this.getInputByName(input.props.name)) {
             console.warn('registerInput() - INPUT ALREADY REGISTERED');
         }
         this.registeredInputs[input.id] = input;
     }
 
-    unregisterInput(input: InputRenderer) {
+    unregisterInput(input: ILegacyInputRef) {
         delete this.registeredInputs[input.id];
     }
 
@@ -274,7 +289,7 @@ class Form extends React.Component<IFormProps> {
         return this.formRef.current.querySelector(`input[name="${inputName}"]`);
     }
 
-    getInputByName(inputName: string): InputRenderer | null {
+    getInputByName(inputName: string): ILegacyInputRef | null {
         for (const i in this.registeredInputs) {
             if (
                 !Object.prototype.hasOwnProperty.call(this.registeredInputs, i)

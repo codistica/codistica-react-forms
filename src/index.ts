@@ -36,6 +36,7 @@ import type {
 import {STATUS} from './defines/constants';
 import {REG_EXPS} from './defines/reg-exps';
 import {useDummyHook} from './hooks/use-dummy-hook/use-dummy-hook';
+import {useInput} from './hooks/use-input/use-input';
 import * as Blockers from './plugins/blockers/index';
 import * as Filters from './plugins/filters/index';
 import * as Presets from './plugins/presets/index';
@@ -100,5 +101,6 @@ export {
     createHeartbeat,
     createResolvedMessage,
     promise,
-    useDummyHook
+    useDummyHook,
+    useInput
 };
