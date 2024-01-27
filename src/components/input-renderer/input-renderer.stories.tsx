@@ -7,15 +7,15 @@ import {InputRenderer} from './input-renderer';
 const Template: ComponentStory<typeof InputRenderer> = (args) => (
     <InputRenderer
         {...args}
-        inputRenderFn={(inputProps, inputRendererAPI) => {
+        inputRenderFn={(bind, api) => {
             return (
                 <div>
                     <input
                         data-testid={'input'}
-                        {...inputProps}
-                        value={inputProps.value as string}
+                        {...bind}
+                        value={bind.value as string}
                     />
-                    <div>{inputRendererAPI.status}</div>
+                    <div>{api.status}</div>
                 </div>
             );
         }}

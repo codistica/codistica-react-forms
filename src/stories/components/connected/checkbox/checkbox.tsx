@@ -9,8 +9,8 @@ type TBaseProps = Omit<TBaseCheckboxProps, 'status' | 'messages' | 'checked'>;
 interface IExtraProps {
     name: string;
     errorMessages?: {
-        mandatory?: string | null;
-        match?: string | null;
+        mandatory?: string;
+        match?: string;
     };
     plugins?: TPlugin;
     required?: boolean;
@@ -29,19 +29,16 @@ const Checkbox: FC<TTextFieldProps> = ({
     return (
         <InputRenderer
             name={name}
-            value={defaultChecked ? 'true' : 'false'}
+            defaultValue={defaultChecked ? 'true' : 'false'}
             voidValue={'false'}
             errorMessages={errorMessages}
             mandatory={required}
             plugins={plugins}
-            inputRenderFn={(
-                {value, ...inputProps},
-                {status, validationObject}
-            ) => {
+            inputRenderFn={({value, ...bind}, {status, validationObject}) => {
                 return (
                     <BaseCheckbox
                         {...rest}
-                        {...inputProps}
+                        {...bind}
                         checked={value === 'true'}
                         required={required}
                         status={status}

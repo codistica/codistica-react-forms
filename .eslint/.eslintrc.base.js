@@ -1,8 +1,8 @@
 const restrictedGlobals = require('confusing-browser-globals');
 
 module.exports = {
-    extends: ['eslint:recommended'],
     plugins: ['@codistica'],
+    extends: ['eslint:recommended'],
     noInlineConfig: true,
     rules: {
         '@codistica/no-optional-chaining': 'warn',

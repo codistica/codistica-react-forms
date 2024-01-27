@@ -15,10 +15,13 @@ import {
     wordValidator
 } from '../../plugins/validators';
 import {wait} from '../../utils/test-utils';
-import type {IOptions} from './use-input';
+import type {IInputProps} from './use-input';
 import {useInput} from './use-input';
 
-interface ITestInputProps extends IOptions {
+type TBaseProps = Omit<IInputProps, 'name'>;
+
+interface ITestInputProps extends TBaseProps {
+    name?: IInputProps['name'];
     proxies?: {
         onChange?: (
             sup: (e: TChangeEvent<TTargetElement>) => void,
@@ -28,7 +31,10 @@ interface ITestInputProps extends IOptions {
 }
 
 const TestInput: FC<ITestInputProps> = ({proxies, ...options}) => {
-    const {bind, api} = useInput(options);
+    const {bind, api} = useInput({
+        name: 'test',
+        ...options
+    });
 
     return (
         <div data-testid={'root'}>
@@ -54,9 +60,11 @@ const TestInput: FC<ITestInputProps> = ({proxies, ...options}) => {
     );
 };
 
-describe('InputRenderer', () => {
+describe('tests for: InputRenderer component', () => {
     it('should render an input', () => {
-        render(<TestInput name={'test'} />);
+        expect.assertions(1);
+
+        render(<TestInput />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -64,7 +72,9 @@ describe('InputRenderer', () => {
     });
 
     it('should render an input with a default value', () => {
-        render(<TestInput name={'test'} defaultValue={'DEFAULT'} />);
+        expect.assertions(1);
+
+        render(<TestInput defaultValue={'DEFAULT'} />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -72,7 +82,9 @@ describe('InputRenderer', () => {
     });
 
     it('should update input value on typing', async () => {
-        render(<TestInput name={'test'} defaultValue={'THIS TEST'} />);
+        expect.assertions(2);
+
+        render(<TestInput defaultValue={'THIS TEST'} />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -85,9 +97,9 @@ describe('InputRenderer', () => {
     });
 
     it('should validate after interaction if "deferValidation" is "true"', () => {
-        render(
-            <TestInput name={'test'} mandatory={true} deferValidation={true} />
-        );
+        expect.assertions(1);
+
+        render(<TestInput mandatory={true} deferValidation={true} />);
 
         const status = screen.getByTestId<HTMLDivElement>('status');
 
@@ -95,9 +107,9 @@ describe('InputRenderer', () => {
     });
 
     it('should validate before interaction if "deferValidation" is "false"', () => {
-        render(
-            <TestInput name={'test'} mandatory={true} deferValidation={false} />
-        );
+        expect.assertions(1);
+
+        render(<TestInput mandatory={true} deferValidation={false} />);
 
         const status = screen.getByTestId<HTMLDivElement>('status');
 
@@ -105,9 +117,10 @@ describe('InputRenderer', () => {
     });
 
     it('should keep "missing" status after validation if "keepMissingStatus" is "true"', () => {
+        expect.assertions(1);
+
         render(
             <TestInput
-                name={'test'}
                 mandatory={true}
                 deferValidation={false}
                 keepMissingStatus={true}
@@ -120,9 +133,10 @@ describe('InputRenderer', () => {
     });
 
     it('should pass "mandatory" error message when required', () => {
+        expect.assertions(1);
+
         render(
             <TestInput
-                name={'test'}
                 mandatory={true}
                 deferValidation={false}
                 errorMessages={{
@@ -137,9 +151,10 @@ describe('InputRenderer', () => {
     });
 
     it('should load and run a validator', async () => {
+        expect.assertions(8);
+
         render(
             <TestInput
-                name={'test'}
                 plugins={lengthValidator({
                     minLength: 10,
                     maxLength: 15
@@ -171,7 +186,9 @@ describe('InputRenderer', () => {
     });
 
     it('should load and run a blocker', async () => {
-        render(<TestInput name={'test'} plugins={nonNumberBlocker} />);
+        expect.assertions(2);
+
+        render(<TestInput plugins={nonNumberBlocker} />);
 
         const input = screen.getByTestId<HTMLInputElement>('input');
 
@@ -184,7 +201,9 @@ describe('InputRenderer', () => {
     });
 
     it('should load and run a filter', async () => {
-        render(<TestInput name={'test'} plugins={spaceFilter} />);
+        expect.assertions(3);
+
+        render(<TestInput plugins={spaceFilter} />);
 
         const root = screen.getByTestId<HTMLDivElement>('root');
         const input = screen.getByTestId<HTMLInputElement>('input');
@@ -202,7 +221,9 @@ describe('InputRenderer', () => {
     });
 
     it('should load and run a preset', async () => {
-        render(<TestInput name={'test'} plugins={prettifyPreset} />);
+        expect.assertions(7);
+
+        render(<TestInput plugins={prettifyPreset} />);
 
         const root = screen.getByTestId<HTMLDivElement>('root');
         const input = screen.getByTestId<HTMLInputElement>('input');
@@ -233,13 +254,9 @@ describe('InputRenderer', () => {
     });
 
     it('should handle non default "voidValue"', async () => {
-        render(
-            <TestInput
-                name={'test'}
-                defaultValue={'INITIAL'}
-                voidValue={'INITIAL'}
-            />
-        );
+        expect.assertions(6);
+
+        render(<TestInput defaultValue={'INITIAL'} voidValue={'INITIAL'} />);
 
         const root = screen.getByTestId<HTMLDivElement>('root');
         const input = screen.getByTestId<HTMLInputElement>('input');
@@ -262,9 +279,10 @@ describe('InputRenderer', () => {
     });
 
     it('should successfully validate a "defaultValue" if equal to "voidValue" when not mandatory', async () => {
+        expect.assertions(4);
+
         render(
             <TestInput
-                name={'test'}
                 defaultValue={'INITIAL'}
                 voidValue={'INITIAL'}
                 mandatory={false}
@@ -285,9 +303,10 @@ describe('InputRenderer', () => {
     });
 
     it('should run filters before validators if "runFiltersBeforeValidators" is "true"', async () => {
+        expect.assertions(6);
+
         render(
             <TestInput
-                name={'test'}
                 runFiltersBeforeValidators={true}
                 plugins={[
                     wordValidator({
@@ -317,6 +336,8 @@ describe('InputRenderer', () => {
     });
 
     it('should execute callbacks on respective events', async () => {
+        expect.assertions(13);
+
         const onKeydownHandler = jest.fn();
         const onChangeHandler = jest.fn();
         const onBlurHandler = jest.fn();
@@ -324,7 +345,6 @@ describe('InputRenderer', () => {
 
         render(
             <TestInput
-                name={'test'}
                 onKeyDown={onKeydownHandler}
                 onChange={onChangeHandler}
                 onBlur={onBlurHandler}
@@ -391,6 +411,8 @@ describe('InputRenderer', () => {
     });
 
     it('should handle async validation', async () => {
+        expect.hasAssertions();
+
         const executor = jest.fn(async () => {
             await wait(100);
             return true;
@@ -398,7 +420,6 @@ describe('InputRenderer', () => {
 
         render(
             <TestInput
-                name={'test'}
                 plugins={asyncValidator({
                     executor,
                     deferThrottlingDelay: 0,
@@ -431,6 +452,8 @@ describe('InputRenderer', () => {
     });
 
     it('should cache async validation results if enabled', async () => {
+        expect.hasAssertions();
+
         const executor = jest.fn(async () => {
             await wait(100);
             return true;
@@ -438,7 +461,6 @@ describe('InputRenderer', () => {
 
         render(
             <TestInput
-                name={'test'}
                 plugins={asyncValidator({
                     executor,
                     deferThrottlingDelay: 0,
@@ -468,13 +490,14 @@ describe('InputRenderer', () => {
     });
 
     it('should use passed stringifier', async () => {
+        expect.assertions(5);
+
         const stringifier = jest.fn(() => {
             return 'stringifier-output';
         });
 
         render(
             <TestInput
-                name={'test'}
                 stringifier={stringifier}
                 plugins={wordValidator({valid: ['stringifier-output']})}
                 proxies={{
@@ -506,9 +529,10 @@ describe('InputRenderer', () => {
     });
 
     it('should use internal stringifier', async () => {
+        expect.assertions(4);
+
         render(
             <TestInput
-                name={'test'}
                 plugins={wordValidator({valid: ['1234']})}
                 proxies={{
                     onChange: (sup, e) => {

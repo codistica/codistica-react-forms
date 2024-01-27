@@ -1,4 +1,4 @@
-import type {ChangeEvent, FocusEvent, KeyboardEvent, ReactNode} from 'react';
+import type {ChangeEvent, FocusEvent, KeyboardEvent} from 'react';
 import type {IPromise} from '../utils/promise/promise';
 
 type TStatus =
@@ -154,7 +154,7 @@ interface IValidationObject {
     data: {[k: string]: IValidationData};
 }
 
-interface IInputProps {
+interface IInputBind {
     name: string;
     value: unknown;
     onKeyDown: (e: KeyboardEvent<TTargetElement>) => void;
@@ -162,7 +162,7 @@ interface IInputProps {
     onBlur: (e: FocusEvent<TTargetElement>) => void;
 }
 
-interface IInputRendererAPI {
+interface IInputAPI {
     status: TStatus;
     validationObject: IValidationObject;
     setNewValue: (value: string) => unknown;
@@ -172,12 +172,35 @@ interface IInputRendererAPI {
     clear: () => void;
 }
 
-type TInputRenderFn = (
-    inputProps: IInputProps,
-    inputRendererAPI: IInputRendererAPI
-) => ReactNode;
+type TInputRenderFn = (bind: IInputBind, api: IInputAPI) => JSX.Element;
 
 type TStringifier = (v: unknown, type: 'validation' | 'form') => string;
+
+interface IValidation extends IValidationObject {
+    isStandBy: boolean;
+    isDeferred: boolean;
+    isVoid: boolean;
+    isMissing: boolean;
+}
+
+type TOnKeyDownHandler = (e: KeyboardEvent<TTargetElement>) => void;
+type TOnChangeHandler = (e: TChangeEvent<TTargetElement> | Event) => void;
+type TOnBlurHandler = (e: FocusEvent<TTargetElement>) => void;
+
+interface ILegacyInputRef {
+    id: string;
+    props: {
+        name: string;
+        match?: string | null;
+    };
+    validateInput: () => void;
+    getValidationValue: () => string;
+    getFormValue: () => string;
+    validationObject: IValidationObject;
+    isInteracted: boolean;
+    warn: (duration?: number) => void;
+    clear: (duration?: number) => void;
+}
 
 export type {
     IBlocker,
@@ -185,12 +208,14 @@ export type {
     IFilter,
     IFormPayload,
     IFormValidationObject,
-    IInputProps,
-    IInputRendererAPI,
+    IInputAPI,
+    IInputBind,
+    ILegacyInputRef,
     IMessageObject,
     IPreset,
     IResolvedMessage,
     IUnknownTarget,
+    IValidation,
     IValidationData,
     IValidationObject,
     IValidationReport,
@@ -202,6 +227,9 @@ export type {
     TDeferCallback,
     TInputRenderFn,
     TMessage,
+    TOnBlurHandler,
+    TOnChangeHandler,
+    TOnKeyDownHandler,
     TOnValidationHandler,
     TPlugin,
     TPluginCore,

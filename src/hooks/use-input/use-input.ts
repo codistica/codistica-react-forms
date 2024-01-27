@@ -1,4 +1,3 @@
-import type {FocusEvent, KeyboardEvent} from 'react';
 import {
     useCallback,
     useContext,
@@ -10,14 +9,17 @@ import {
 import {PluginManager} from '../../classes/plugin-manager/plugin-manager';
 import {FormContext} from '../../components/form/form';
 import type {
-    IInputProps,
-    IInputRendererAPI,
+    IInputAPI,
+    IInputBind,
     IResolvedMessage,
+    IValidation,
     IValidationData,
-    IValidationObject,
     IValidationReport,
     IValidatorOutput,
     TChangeEvent,
+    TOnBlurHandler,
+    TOnChangeHandler,
+    TOnKeyDownHandler,
     TPlugin,
     TStatus,
     TStringifier,
@@ -26,18 +28,7 @@ import type {
 import {createResolvedMessage} from '../../utils/create-resolved-message/create-resolved-message';
 import {stringify} from '../../utils/stringify/stringify';
 
-interface IValidation extends IValidationObject {
-    isStandBy: boolean;
-    isDeferred: boolean;
-    isVoid: boolean;
-    isMissing: boolean;
-}
-
-type TOnKeyDownHandler = (e: KeyboardEvent<TTargetElement>) => void;
-type TOnChangeHandler = (e: TChangeEvent<TTargetElement> | Event) => void;
-type TOnBlurHandler = (e: FocusEvent<TTargetElement>) => void;
-
-interface IOptions {
+interface IInputProps {
     name: string;
     value?: string;
     defaultValue?: string;
@@ -59,9 +50,9 @@ interface IOptions {
     onBlur?: TOnBlurHandler;
 }
 
-interface IReturn {
-    bind: IInputProps;
-    api: IInputRendererAPI;
+interface IInputControls {
+    bind: IInputBind;
+    api: IInputAPI;
 }
 
 function useInput({
@@ -81,7 +72,7 @@ function useInput({
     onKeyDown = undefined,
     onChange = undefined,
     onBlur = undefined
-}: IOptions): IReturn {
+}: IInputProps): IInputControls {
     const {formInstance} = useContext(FormContext);
 
     const [value, setValue] = useState<unknown>(defaultValue);
@@ -236,7 +227,7 @@ function useInput({
                 formInstance.validateForm();
             }
 
-            // TODO: CHECK/REMOVE
+            // TODO: VESTIGE- CHECK/REMOVE
             // this.updateStatus();
 
             const output = {
@@ -305,14 +296,14 @@ function useInput({
     );
 
     const setNewValue = useCallback<(newValue: unknown) => void>((newValue) => {
-        // TODO: CHECK/REMOVE
+        // TODO: VESTIGE- CHECK/REMOVE
         // newValue: unknown,
         // emulateChange?: boolean,
         // inputElement?: TTargetElement
 
         setValue(newValue);
 
-        // TODO: CHECK/REMOVE
+        // TODO: VESTIGE- CHECK/REMOVE
         // if (emulateChange && inputElement) {
         //     this.syntheticEvent = new Event('change', {bubbles: true});
         //
@@ -518,7 +509,7 @@ function useInput({
                     // INDICATE THAT THERE HAS BEEN INTERACTION
                     setIsTouched(true);
 
-                    // TODO: CHECK/REMOVE
+                    // TODO: VESTIGE- CHECK/REMOVE
                     // setNewValue(newValue, true, e.target);
 
                     setNewValue(newValue);
@@ -539,7 +530,7 @@ function useInput({
         ]
     );
 
-    // TODO: REMOVE
+    // TODO: TEMP - REMOVE
     const legacyInputRef = useRef({
         id: name,
         props: {
@@ -560,7 +551,7 @@ function useInput({
         clear
     });
 
-    // TODO: REMOVE
+    // TODO: TEMP - REMOVE
     useMemo(() => {
         legacyInputRef.current.id = name;
         legacyInputRef.current.props.name = name;
@@ -600,9 +591,13 @@ function useInput({
             formInstance.registerInput(ref);
         }
 
-        // TODO: CHECK/REMOVE
+        // TODO: VESTIGE- CHECK/REMOVE
         // VALIDATE INITIAL VALUE
         // validateInput();
+
+        if (formInstance) {
+            formInstance.validateForm();
+        }
 
         // LINK INPUTS FOR SUCCESSIVE VALIDATIONS
         if (match && formInstance) {
@@ -642,5 +637,5 @@ function useInput({
     };
 }
 
-export type {IOptions};
+export type {IInputControls, IInputProps};
 export {useInput};

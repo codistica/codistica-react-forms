@@ -67,7 +67,7 @@ module.exports = {
             extends: ['./.eslint/.eslintrc.node-esm.js']
         },
         {
-            // JEST - TESTS - JS
+            // JEST - TESTS - TS/JS
             files: ['**/*.test.{ts,js}'],
             extends: ['./.eslint/.eslintrc.jest.js']
         },

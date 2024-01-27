@@ -55,7 +55,7 @@ a project may be further defined and clarified by project maintainers.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at <security@codistica.com>
+reported by contacting the project team at [security@codistica.com](mailto:security@codistica.com)
 or by contacting a [Codistica team member][codistica-people]. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is

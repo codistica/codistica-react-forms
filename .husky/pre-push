@@ -9,4 +9,4 @@ yarn run lint:format || exit 1
 yarn run lint:code || exit 1
 yarn run lint:commits || exit 1
 yarn run test:unit-ci || exit 1
-yarn run lint:no-diff
+yarn run lint:no-diff || exit 1

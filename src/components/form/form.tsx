@@ -3,7 +3,7 @@ import React, {createContext} from 'react';
 import type {
     IFormPayload,
     IFormValidationObject,
-    IValidationObject,
+    ILegacyInputRef,
     TOnValidationHandler,
     TTargetElement
 } from '../../defines/common.types';
@@ -14,21 +14,6 @@ const FormContext = createContext<{
 }>({
     formInstance: null
 });
-
-interface ILegacyInputRef {
-    id: string;
-    props: {
-        name: string;
-        match?: string | null;
-    };
-    validateInput: () => void;
-    getValidationValue: () => string;
-    getFormValue: () => string;
-    validationObject: IValidationObject;
-    isInteracted: boolean;
-    warn: (duration?: number) => void;
-    clear: (duration?: number) => void;
-}
 
 interface IFormProps extends HTMLAttributes<HTMLFormElement> {
     onValidationResult: null | TOnValidationHandler;
@@ -196,7 +181,7 @@ class Form extends React.Component<IFormProps> {
             const input = this.registeredInputs[i];
 
             // CHECK VALIDITY
-            if (input.validationObject.result === false) {
+            if (input.validationObject.result !== true) {
                 this.validationResult = false;
             }
 

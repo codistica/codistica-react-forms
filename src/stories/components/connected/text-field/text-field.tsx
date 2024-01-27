@@ -10,8 +10,8 @@ interface IExtraProps {
     name: string;
     defaultValue?: string;
     errorMessages?: {
-        mandatory?: string | null;
-        match?: string | null;
+        mandatory?: string;
+        match?: string;
     };
     plugins?: TPlugin;
     required?: boolean;
@@ -21,24 +21,24 @@ type TTextFieldProps = TBaseProps & IExtraProps;
 
 const TextField: FC<TTextFieldProps> = ({
     name,
+    defaultValue,
     errorMessages,
     plugins,
     required,
-    defaultValue,
     ...rest
 }) => {
     return (
         <InputRenderer
             name={name}
-            value={defaultValue}
+            defaultValue={defaultValue}
             errorMessages={errorMessages}
-            mandatory={required}
             plugins={plugins}
-            inputRenderFn={(inputProps, {status, validationObject}) => {
+            mandatory={required}
+            inputRenderFn={(bind, {status, validationObject}) => {
                 return (
                     <BaseTextField
                         {...rest}
-                        {...inputProps}
+                        {...bind}
                         required={required}
                         status={status}
                         messages={validationObject.messages.map(

@@ -1,7 +1,9 @@
 import {flat} from './flat';
 
-describe('ArrayUtils - flat', () => {
+describe('tests for: ArrayUtils.flat utility', () => {
     it('should return a flat array containing all elements from received nested array.', () => {
+        expect.assertions(3);
+
         [
             {
                 input: [0, 1, [2, [[3]]]],
